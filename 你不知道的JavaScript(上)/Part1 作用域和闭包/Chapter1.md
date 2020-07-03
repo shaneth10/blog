@@ -58,7 +58,7 @@ console.log(a) // 2
 ```
 - 案例2
 ```
-console.log(a)
+console.log(a) // undefined
 var a = 2
 ```
 
