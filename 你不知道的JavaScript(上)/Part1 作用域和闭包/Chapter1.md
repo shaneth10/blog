@@ -87,3 +87,44 @@ baz() // 2
 拜bar()所声明的位置所赐，它拥有涵盖foo()内部作用域的闭包，使得该作用域能够一直存活，以供bar()在之后任何时间进行引用。
 bar()依然持有对该作用域的引用，而这个引用就叫做闭包。
 
+- 重返作用域
+```
+for (var i=1; i<=5; i++) {
+  let j = i // 闭包的块作用域
+  setTimeout( function timer() {
+    console.log(i)
+  }, i*1000)
+}
+```
+> 块作用域和闭包共同使用
+
+- 模块
+
+```
+function CoolModule() {
+  var something = 'cool'
+  var another = [1, 2, 3]
+
+  function doSomething() {
+    console.log(something)
+  }
+
+  function doAnother() {
+    console.log(another.join('!'))
+  }
+
+  return {
+    doSomething: doSomething,
+    doAnother: doAnother
+  }
+}
+
+var foo = CoolModule
+
+foo.doSomething() // cool
+foo.doAnother() // 1!2!3
+```
+
+> 这个模式被称为模块，最常见的实现模块模式的方法通常被称为模块暴露。模块模式需要具备两个必要条件
+1、必须有外部的封闭函数，该函数必须至少被调用一次。
+2、封闭函数必须返回至少一个内部函数，这样内部函数才能在私有作用域中形成闭包，并且可以访问或者修改私有的状态。
