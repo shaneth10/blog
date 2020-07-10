@@ -128,3 +128,29 @@ foo.doAnother() // 1!2!3
 > 这个模式被称为模块，最常见的实现模块模式的方法通常被称为模块暴露。模块模式需要具备两个必要条件
 1、必须有外部的封闭函数，该函数必须至少被调用一次。
 2、封闭函数必须返回至少一个内部函数，这样内部函数才能在私有作用域中形成闭包，并且可以访问或者修改私有的状态。
+
+- 现代的模块机制
+
+```
+var MyModules = (function(){
+  var modules = {};
+
+  function define(name, deps, impl) {
+      for(var i = 0; i < deps.length; i++) {
+          deps[i] = modules[deps[i]];
+      }
+      modules[name] = impl.apply(impl, deps);
+  }
+
+  function get(name) {
+      return modules[name];
+  }
+
+  return {
+      define : define,
+      get : get
+  };
+})();
+```
+
+> 这段的代码的核心是```modeules[name] = imp.apply(impl, deps);```，为了模块的定义引入包装函数（可以传入任何依赖），并且将返回值，也就是模块的API，储存在一个根据名字来管理的模块列表中。
