@@ -154,3 +154,57 @@ var MyModules = (function(){
 ```
 
 > 这段的代码的核心是```modeules[name] = imp.apply(impl, deps);```，为了模块的定义引入包装函数（可以传入任何依赖），并且将返回值，也就是模块的API，储存在一个根据名字来管理的模块列表中。
+
+```
+MyModules.define('bar', [], function() {
+    function hellow(who) {
+        return 'Let me introduce : ' + who;
+    }
+
+    return {
+        hellow : hellow
+    };
+});
+
+MyModules.define('foo', ['bar'], function() {
+    var hungry = 'hippo';
+
+    function awesome() {
+        console.log(bar.hellow(hungry).toUpperCase());
+    }
+
+    return {
+        awesome : awesome
+    };
+});
+
+var bar = MyModules.get('bar');
+var foo = MyModules.get('foo');
+
+console.log(bar.hellow('hippo'));   //Let me introduce : hippo
+foo.awesome();  //LET ME INTRODUCE : HIPPO
+```
+
+- 未来的模块机制
+
+```
+bar.js
+  
+  function hello() {}
+  export hello
+
+foo.js
+
+  // 仅从'bar'模块导入hello()
+  import hello from 'bar
+
+  function awesome() {}
+  export awesome
+
+baz.js
+
+  module foo from 'foo'
+  module bar from 'bar'
+```
+
+> import可以将一个模块中的一个或多个API导入到当前作用域中，并分别绑定在一个变量上。module会将整个模块的API导入并绑定到一个变量上(foo和bar)。export会将当前模块的一个标识符导出为公共API。
