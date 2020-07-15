@@ -169,3 +169,5 @@ var obj = {
 
 [1,2,3].forEach(foo,obj) //1 awesome 2 awesome 3 awesome
 ```
+
+- new绑定
