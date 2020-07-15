@@ -145,3 +145,27 @@ var a = 'oops, global' // a是全局对象属性
 bar() // 'oops, global'
 ```
 > 虽然bar是obj.foo的一个引用，但是实际上，它引用的是foo函数本身,因此此时的bar()其实是一个不带任何修饰的函数调用，因此应用了默认绑定。
+
+- 显式绑定
+
+#### call(...)&apply(...)
+```
+var bar = function() {
+  foo.call(obj)
+}
+```
+> 在bar函数内部调用foo.call(obj)强制把foo的this绑定到了obj。这种绑定是一种显式的强制绑定，我们称之为硬绑定。
+
+#### API调用的“上下文”
+
+```
+function foo(el) {
+  console.log(el, this.id)
+}
+
+var obj = {
+  id: 'awesome'
+}
+
+[1,2,3].forEach(foo,obj) //1 awesome 2 awesome 3 awesome
+```
