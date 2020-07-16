@@ -185,3 +185,31 @@ var bar = new foo(2)
 console.log(bar.a) // 2
 ```
 > 使用new来调用foo(...)时，我们会构造一个新对象并把它绑定到foo(...)调用中的this上。new是最后一种可以影响函数调用的this绑定行为的方法，我们称之为new绑定。
+
+### 优先级
+
+毫无疑问，默认绑定的优先级是四条规则中最低的，我们可以先不考虑它。
+
+- 隐式绑定和显示绑定
+```
+function foo() {
+  console.log(this.a)
+}
+
+var obj1 = {
+  a: 2,
+  foo: foo
+}
+
+var obj2 = {
+  a: 3,
+  foo: foo
+}
+
+obj1.foo() // 2
+obj2.foo() // 3
+
+obj1.foo.call(obj2) // 3
+obj2.foo.call(obj1) // 2
+```
+可以看到，显示绑定优先级更高。
