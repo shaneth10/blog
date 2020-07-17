@@ -213,3 +213,28 @@ obj1.foo.call(obj2) // 3
 obj2.foo.call(obj1) // 2
 ```
 可以看到，显示绑定优先级更高。
+
+- new绑定和隐式绑定
+```
+function foo(something) {
+  this.a = something
+}
+var obj1 = {
+  foo: foo
+}
+var bar = new obj1.foo(4)
+console.log(obj1.a) // 2
+console.log(bar.a) // 4
+```
+可以看到，new绑定比隐式绑定优先级高
+
+- new绑定和显示绑定 
+
+new绑定优先级大于显示绑定
+
+> 所以四种绑定方式的优先级为new绑定 > 显示绑定 > 隐式绑定 > 默认绑定
+我们可以通过优先级来判断函数应用的是哪条规则：
+1、函数在new中调用（new绑定）？如果是 this绑定的就是新创建的对象 ```var bar = new foo()```
+2、函数通过call、apply（显示绑定）或者硬绑定调用？是的话 this绑定的是指定对象 ```var bar = foo.call(obj2)```
+3、函数在某个上下文对象中调用（隐式绑定）？如果是 this绑定的是那个上下文对象```var bar = obj1.foo()```
+4、如果都不是，使用默认绑定，在严格模式下，就是绑定到undefined，否则绑定到全局对象```var bar = foo()```
