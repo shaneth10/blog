@@ -238,3 +238,29 @@ new绑定优先级大于显示绑定
 2、函数通过call、apply（显示绑定）或者硬绑定调用？是的话 this绑定的是指定对象 ```var bar = foo.call(obj2)```
 3、函数在某个上下文对象中调用（隐式绑定）？如果是 this绑定的是那个上下文对象```var bar = obj1.foo()```
 4、如果都不是，使用默认绑定，在严格模式下，就是绑定到undefined，否则绑定到全局对象```var bar = foo()```
+
+### 绑定例外
+
+如果你把null或者undefined作为this的绑定对象传入call、apply或者bind，这些值再被调用时会被忽略，实际应用的是默认绑定规则。
+然而总是使用null来忽略this绑定可能产生一些副作用。如果某个函数确实使用了this(第三方库中的一个函数)，那默认绑定规则会把this绑定到全局对象。
+- 更安全的this
+> 把this绑定到空对象上，就什么都不用担心了，因为任何对于this的使用都会被限制在这个空对象中，不会对全局对象产生影响。```var ø = Object.create(null)```这个创建空对象的方法，并不会创建Object.prototype这个委托，所以它比{}“更空”
+
+### this词法
+ES6中的箭头函数并不是通过function关键词定义的，而是使用被称为“胖箭头”的操作符=>定义的。箭头函数不使用this的四种标准规则，二十根据外层作用于来决定this的。
+```
+function foo() {
+  return (a) => {
+    console.log(this.a)
+  }
+}
+var obj1 = {
+  a: 2
+}
+var obj2 = {
+  a: 3
+}
+var bar = foo.call(obj1)
+bar.call(obj2) // 2,不是3
+```
+> foo()内部创建的箭头函数会捕获调用时foo()的this。由于foo()的this绑定到obj1，bar（引用箭头函数）的this也会绑定到obj1，箭头函数的绑定无法被修改。
