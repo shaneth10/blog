@@ -46,7 +46,7 @@ Vue.js 3.0 自身采用了 TypeScript 开发，而1.x没有用到类型语言，
 
 ## 性能优化
 
-### 源码体积优化
+### 1.源码体积优化
 
 - 移除一些冷门的feature
 - 引入tree-shaking的基数，减少打包体积(压缩阶段会利用例如 uglify-js、terser 等压缩工具真正地删除这些没有用到的代码)
@@ -79,7 +79,7 @@ math 模块会被 webpack 打包生成如下代码：
 });
 ```
 
-### 数据劫持优化
+### 2.数据劫持优化
 
 > DOM 是数据的一种映射，数据发生变化后可以自动更新 DOM，用户只需要专注于数据的修改，没有其余的心智负担。
 
@@ -91,10 +91,16 @@ Vue.js 1.x 和 Vue.js 2.x 内部都是通过 Object.defineProperty 这个 API �
 
 Vue.js 3.0 使用了 Proxy API 做数据劫持，由于它劫持的是整个对象，那么自然对于对象的属性的增加和删除都能检测到。Vue.js 3.0 的处理方式是在 getter 中去递归响应式，这样的好处是真正访问到的内部对象才会变成响应式，而不是无脑递归。
 
-### 编译优化
+### 3.编译优化
 
 new Vue -> init -> $mount -> compile -> render -> vnode -> patch -> DOM
 
 > 响应式过程就发生在图中的init阶段，另外 template compile to render function 的流程是可以借助 vue-loader 在 webpack 编译阶段离线完成，并非一定要在运行时完成。
 > 所以想优化整个 Vue.js 的运行时，除了数据劫持部分的优化，也可以通过在编译阶段优化编译的结果，来实现运行时 patch 过程的优化。
 > Vue.js 3.0通过编译阶段对静态模板的分析，编译生成了 Block tree，一个将模版基于动态节点指令切割的嵌套区块，每个区块内部的节点结构是固定的，而且每个区块只需要以一个 Array 来追踪自身包含的动态节点。借助 Block tree，Vue.js 将 vnode 更新性能由与模版整体大小相关提升为与动态内容的数量相关。
+
+## 语法 API 优化：Composition API
+
+### 1.优化逻辑组织 
+
+在 Vue.js 1.x 和 2.x 版本中，编写组件本质就是在编写一个“包含了描述组件选项的对象”，我们把它称为 Options API。Options API 的设计是按照 methods、computed、data、props 这些不同的选项分类，当组件小的时候，这种分类方式一目了然；但是在大型组件中，一个组件可能有多个逻辑关注点，当使用 Options API 的时候，每一个关注点都有自己的 Options，如果需要修改一个逻辑点关注点，就需要在单个文件中不断上下切换和寻找。
