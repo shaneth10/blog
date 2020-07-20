@@ -103,4 +103,83 @@ new Vue -> init -> $mount -> compile -> render -> vnode -> patch -> DOM
 
 ### 1.优化逻辑组织 
 
-在 Vue.js 1.x 和 2.x 版本中，编写组件本质就是在编写一个“包含了描述组件选项的对象”，我们把它称为 Options API。Options API 的设计是按照 methods、computed、data、props 这些不同的选项分类，当组件小的时候，这种分类方式一目了然；但是在大型组件中，一个组件可能有多个逻辑关注点，当使用 Options API 的时候，每一个关注点都有自己的 Options，如果需要修改一个逻辑点关注点，就需要在单个文件中不断上下切换和寻找。
+> 在 Vue.js 1.x 和 2.x 版本中，编写组件本质就是在编写一个“包含了描述组件选项的对象”，我们把它称为 Options API。Options API 的设计是按照 methods、computed、data、props 这些不同的选项分类，当组件小的时候，这种分类方式一目了然；但是在大型组件中，一个组件可能有多个逻辑关注点，当使用 Options API 的时候，每一个关注点都有自己的 Options，如果需要修改一个逻辑点关注点，就需要在单个文件中不断上下切换和寻找。
+> Vue.js 3.0 提供了一种新的 API：Composition API，它有一个很好的机制去解决这样的问题，就是将某个逻辑关注点相关的代码全都放在一个函数里。
+
+### 2.优化逻辑复用
+
+> 在 Vue.js 2.x 中，我们通常会用 mixins 去复用逻辑，举一个鼠标位置侦听的例子，我们会编写如下函数 mousePositionMixin：
+```
+const mousePositionMixin = {
+  data() {
+    return {
+      x: 0,
+      y: 0
+    }
+  },
+  mounted() {
+    window.addEventListener('mousemove', this.update)
+  },
+  destroyed() {
+    window.removeEventListener('mousemove', this.update)
+  },
+  methods: {
+    update(e) {
+      this.x = e.pageX
+      this.y = e.pageY
+    }
+  }
+}
+export default mousePositionMixin
+```
+在组件中使用：
+```
+<template>
+  <div>
+    Mouse position: x {{ x }} / y {{ y }}
+  </div>
+</template>
+<script>
+import mousePositionMixin from './mouse'
+export default {
+  mixins: [mousePositionMixin]
+}
+</script>
+```
+这样使用会存在两个问题：命名冲突和数据来源不清晰。首先，每个mixin内部其实都可以定义自己的props和data，很容易导致命名冲突。但是Vue.js 3.0 设计的 Composition API，就很好地帮助我们解决了 mixins 的这两个问题。
+```
+import { ref, onMounted, onUnmounted } from 'vue'
+export default function useMousePosition() {
+  const x = ref(0)
+  const y = ref(0)
+  const update = e => {
+    x.value = e.pageX
+    y.value = e.pageY
+  }
+  onMounted(() => {
+    window.addEventListener('mousemove', update)
+  })
+  onUnmounted(() => {
+    window.removeEventListener('mousemove', update)
+  })
+  return { x, y }
+}
+```
+然后在组件中使用：
+```
+<template>
+  <div>
+    Mouse position: x {{ x }} / y {{ y }}
+  </div>
+</template>
+<script>
+  import useMousePosition from './mouse'
+  export default {
+    setup() {
+      const { x, y } = useMousePosition()
+      return { x, y }
+    }
+  }
+</script>
+```
+这样看的话，数据来源清晰了很多，更不会出现命名冲突的问题了。他除了在编辑复用方面有优势，也会有更好的类型支持，因为他们都是一些函数，在调用函数时，自然所有的类型就被推导出来了，不像Options API所有的东西使用this。另外，Composition API对tree-shaking友好，代码也更容易压缩。
