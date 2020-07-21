@@ -88,3 +88,26 @@ function createAppAPI(render) {
 > 在 Vue.js 3.0 内部通过 createRenderer 创建一个渲染器，这个渲染器内部会有一个 createApp 方法，它是执行 createAppAPI 方法返回的函数，接受了 rootComponent 和 rootProps 两个参数，我们在应用层面执行 createApp(App) 方法时，会把 App 组件对象作为根组件传递给 rootComponent。这样，createApp 内部就创建了一个 app 对象，它会提供 mount 方法，这个方法是用来挂载组件的。
 
 - 2.重写app.mount方法
+
+```
+app.mount = (containerOrSelector) => {
+  // 标准化容器
+  const container = normalizeContainer(containerOrSelector)
+  if (!container)
+    return
+  const component = app._component
+   // 如组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容
+  if (!isFunction(component) && !component.render && !component.template) {
+    component.template = container.innerHTML
+  }
+  // 挂载前清空容器内容
+  container.innerHTML = ''
+  // 真正的挂载
+  return mount(container)
+}
+```
+> 首先是通过 normalizeContainer 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器），然后做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容；接着在挂载前清空容器内容，最终再调用 app.mount 的方法走标准的组件渲染流程。
+
+## 核心渲染流程：创建vnode和渲染vnode
+
+- 1.创建vnode
