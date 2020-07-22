@@ -111,3 +111,78 @@ app.mount = (containerOrSelector) => {
 ## 核心渲染流程：创建vnode和渲染vnode
 
 - 1.创建vnode
+
+vnode 本质上是用来描述 DOM 的 JavaScript 对象，它在 Vue.js 中可以描述不同类型的节点，比如普通元素节点、组件节点等。
+我们可以用vnode这样表示<button>标签：
+```
+const vnode = {
+  type: 'button',
+  props: { 
+    'class': 'btn',
+    style: {
+      width: '100px',
+      height: '50px'
+    }
+  },
+  children: 'click me'
+}
+```
+同样，vnode也可以用来描述组件标签，方式跟上面的相同，组件vnode其实是对抽象事物的描述。
+回顾 app.mount 函数的实现，内部是通过 createVNode 函数创建了根组件的 vnode ：
+```
+const vnode = createVNode(rootComponent, rootProps)
+```
+我们来看一下 createVNode 函数的大致实现：
+```
+function createVNode(type, props = null
+,children = null) {
+  if (props) {
+    // 处理 props 相关逻辑，标准化 class 和 style
+  }
+  // 对 vnode 类型信息编码
+  const shapeFlag = isString(type)
+    ? 1 /* ELEMENT */
+    : isSuspense(type)
+      ? 128 /* SUSPENSE */
+      : isTeleport(type)
+        ? 64 /* TELEPORT */
+        : isObject(type)
+          ? 4 /* STATEFUL_COMPONENT */
+          : isFunction(type)
+            ? 2 /* FUNCTIONAL_COMPONENT */
+            : 0
+  const vnode = {
+    type,
+    props,
+    shapeFlag,
+    // 一些其他属性
+  }
+  // 标准化子节点，把不同数据类型的 children 转成数组或者文本类型
+  normalizeChildren(vnode, children)
+  return vnode
+}
+```
+其实 createVNode 做的事情很简单，就是：对 props 做标准化处理、对 vnode 的类型信息编码、创建 vnode 对象，标准化子节点 children 。
+
+- 2.渲染vnode
+
+回顾 app.mount 函数的实现，内部通过执行这段代码去渲染创建好的 vnode：
+```
+render(vnode, rootContainer)
+const render = (vnode, container) => {
+  if (vnode == null) {
+    // 销毁组件
+    if (container._vnode) {
+      unmount(container._vnode, null, null, true)
+    }
+  } else {
+    // 创建或者更新组件
+    patch(container._vnode || null, vnode, container)
+  }
+  // 缓存 vnode 节点，表示已经渲染
+  container._vnode = vnode
+}
+```
+从以上代码可以看出，整个渲染过程，其实就是先判断vnode是否存在，不存在就进行销毁，否则进行创建或者更新的操作。
+
+接下来，我们看下patch函数到底做了哪些操作：
