@@ -186,3 +186,44 @@ const render = (vnode, container) => {
 从以上代码可以看出，整个渲染过程，其实就是先判断vnode是否存在，不存在就进行销毁，否则进行创建或者更新的操作。
 
 接下来，我们看下patch函数到底做了哪些操作：
+```
+const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null, isSVG = false, optimized = false) => {
+  // 如果存在新旧节点, 且新旧节点类型不同，则销毁旧节点
+  if (n1 && !isSameVNodeType(n1, n2)) {
+    anchor = getNextHostNode(n1)
+    unmount(n1, parentComponent, parentSuspense, true)
+    n1 = null
+  }
+  const { type, shapeFlag } = n2
+  switch (type) {
+    case Text:
+      // 处理文本节点
+      break
+    case Comment:
+      // 处理注释节点
+      break
+    case Static:
+      // 处理静态节点
+      break
+    case Fragment:
+      // 处理 Fragment 元素
+      break
+    default:
+      if (shapeFlag & 1 /* ELEMENT */) {
+        // 处理普通 DOM 元素
+        processElement(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized)
+      }
+      else if (shapeFlag & 6 /* COMPONENT */) {
+        // 处理组件
+        processComponent(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized)
+      }
+      else if (shapeFlag & 64 /* TELEPORT */) {
+        // 处理 TELEPORT
+      }
+      else if (shapeFlag & 128 /* SUSPENSE */) {
+        // 处理 SUSPENSE
+      }
+  }
+}
+```
+这个函数有两个功能，一个是根据 vnode 挂载 DOM，一个是根据新旧 vnode 更新 DOM。在创建的过程中，patch 函数接受多个参数，这里我们目前只重点关注前三个：第一个参数 n1 表示旧的 vnode，当 n1 为 null 的时候，表示是一次挂载的过程；第二个参数 n2 表示新的 vnode 节点，后续会根据这个 vnode 类型执行不同的处理逻辑；第三个参数 container 表示 DOM 容器，也就是 vnode 渲染生成 DOM 后，会挂载到 container 下面。对于渲染的节点，我们需要重点关注下对组件的处理和对普通DOM元素的处理。
