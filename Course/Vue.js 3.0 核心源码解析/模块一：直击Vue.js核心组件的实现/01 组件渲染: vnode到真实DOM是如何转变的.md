@@ -227,3 +227,50 @@ const patch = (n1, n2, container, anchor = null, parentComponent = null, parentS
 }
 ```
 这个函数有两个功能，一个是根据 vnode 挂载 DOM，一个是根据新旧 vnode 更新 DOM。在创建的过程中，patch 函数接受多个参数，这里我们目前只重点关注前三个：第一个参数 n1 表示旧的 vnode，当 n1 为 null 的时候，表示是一次挂载的过程；第二个参数 n2 表示新的 vnode 节点，后续会根据这个 vnode 类型执行不同的处理逻辑；第三个参数 container 表示 DOM 容器，也就是 vnode 渲染生成 DOM 后，会挂载到 container 下面。对于渲染的节点，我们需要重点关注下对组件的处理和对普通DOM元素的处理。
+用来处理组件的 processComponent 函数的实现：
+```
+const processComponent = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
+  if (n1 == null) {
+   // 挂载组件
+   mountComponent(n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized)
+  }
+  else {
+    // 更新组件
+    updateComponent(n1, n2, parentComponent, optimized)
+  }
+}
+```
+该函数的逻辑很简单，如果 n1 为 null，则执行挂载组件的逻辑，否则执行更新组件的逻辑。
+挂载组件的 mountComponent 函数的实现：
+```
+const mountComponent = (initialVNode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
+  // 创建组件实例
+  const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent, parentSuspense))
+  // 设置组件实例
+  setupComponent(instance)
+  // 设置并运行带副作用的渲染函数
+  setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized)
+}
+```
+可以看到，挂载组件函数 mountComponent 主要做三件事情：创建组件实例、设置组件实例、设置并运行带副作用的渲染函数。
+然后我们来看一下运行带副作用的渲染函数setupRenderEffect:
+```
+const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
+  // 创建响应式的副作用渲染函数
+  instance.update = effect(function componentEffect() {
+    if (!instance.isMounted) {
+      // 渲染组件生成子树 vnode
+      const subTree = (instance.subTree = renderComponentRoot(instance))
+      // 把子树 vnode 挂载到 container 中
+      patch(null, subTree, container, anchor, instance, parentSuspense, isSVG)
+      // 保留渲染生成的子树根 DOM 节点
+      initialVNode.el = subTree.el
+      instance.isMounted = true
+    }
+    else {
+      // 更新组件
+    }
+  }, prodEffectOptions)
+}
+```
+> 该函数利用响应式库的 effect 函数创建了一个副作用渲染函数 componentEffect （effect 的实现我们后面讲响应式章节会具体说）。副作用，这里你可以简单地理解为，当组件的数据发生变化时，effect 函数包裹的内部渲染函数 componentEffect 会重新执行一遍，从而达到重新渲染组件的目的。渲染函数内部也会判断这是一次初始渲染还是组件更新。
