@@ -274,3 +274,5 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 }
 ```
 > 该函数利用响应式库的 effect 函数创建了一个副作用渲染函数 componentEffect （effect 的实现我们后面讲响应式章节会具体说）。副作用，这里你可以简单地理解为，当组件的数据发生变化时，effect 函数包裹的内部渲染函数 componentEffect 会重新执行一遍，从而达到重新渲染组件的目的。渲染函数内部也会判断这是一次初始渲染还是组件更新。
+
+**初始渲染主要做两件事情：渲染组件生成 subTree、把 subTree 挂载到 container 中。**
