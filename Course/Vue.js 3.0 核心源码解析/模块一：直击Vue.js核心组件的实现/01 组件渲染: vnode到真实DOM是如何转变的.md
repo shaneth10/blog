@@ -285,3 +285,12 @@ const setupRenderEffect = (instance, initialVNode, container, anchor, parentSusp
 可以看到，挂载元素函数主要做四件事：**创建 DOM 元素节点、处理 props、处理 children、挂载 DOM 元素到 container 上。**
 
 子节点的挂载逻辑同样很简单，遍历 children 获取到每一个 child，然后递归执行 patch 方法挂载每一个 child 。
+
+> **知识延伸：嵌套组件**
+> 在 mountChildren 的时候递归执行的是 patch 函数，而不是 mountElement 函数，这是因为子节点可能有其他类型的 vnode，比如组件 vnode。
+> 在真实开发场景中，嵌套组件场景是再正常不过的了，前面我们举的 App 和 Hello 组件的例子就是嵌套组件的场景。组件 vnode 主要维护着组件的定义对象，组件上的各种 props，而组件本身是一个抽象节点，它自身的渲染其实是通过执行组件定义的 render 函数渲染生成的子树 vnode 来完成，然后再 patch 。通过这种递归的方式，无论组件的嵌套层级多深，都可以完成整个组件树的渲染。
+
+## 总结
+
+这里，我用一张图来带你更加直观地感受下整个组件渲染流程：
+![image](https://s0.lgstatic.com/i/image/M00/2E/0A/CgqCHl8EPLKAF8u5AAJHdNl56bM640.png)
