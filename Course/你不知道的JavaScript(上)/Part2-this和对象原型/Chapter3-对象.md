@@ -46,4 +46,12 @@ myObject['foobar'] // hello
 myObject['foobaz'] // world
 ```
 
-### 数组
+### 复制对象
+
+- 深拷贝
+```
+var newObj = JSON.parse( JSON.stringify(someObj))
+```
+这种方法需要保证对象时JSON安全的，所以只适用于部分情况。
+- 浅拷贝
+相比较深拷贝，浅拷贝非常易懂并且问题要少得多，所以ES6定义了Object.assign(..)方法来实现浅拷贝。这个方法的第一个参数是目标对象，之后还可以跟一个或多个浅拷贝。
