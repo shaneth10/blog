@@ -55,3 +55,36 @@ var newObj = JSON.parse( JSON.stringify(someObj))
 这种方法需要保证对象时JSON安全的，所以只适用于部分情况。
 - 浅拷贝
 相比较深拷贝，浅拷贝非常易懂并且问题要少得多，所以ES6定义了Object.assign(..)方法来实现浅拷贝。这个方法的第一个参数是目标对象，之后还可以跟一个或多个浅拷贝。
+
+### 属性描述符
+
+JavaScript语言本身并没有提供可以直接检测属性特性的方法，比如判断属性是够只读。但是从ES5开始，所有的属性都具备了属性描述符。
+思考下面的代码：
+```
+var myObject = {
+  a: 2
+}
+Object.getOwnPropertyDescriptor('myObject', 'a')
+// {
+//   value: 2,
+//   writable: true,
+//   enumerable: true,
+//   configurable: true
+// }
+```
+这个普通的对象属性对应的属性描述符还包含另外三个特性：writable(可写)、enumerable(可枚举)、configurable(可配置)。
+在创建普通属性时属性描述符会使用默认值，我们也可以使用Object.defineProperty(..)来添加一个新属性或者修改一个已有属性并对特性进行设置。
+比如：
+```
+var myObject = {}
+Object.defineProperty('myObject', 'a', {
+  value: 2,
+  writable: true,
+  enumerable: true,
+  configurable: true
+})
+```
+即使属性是configurable，我们还是可以把writable的状态由true改为false，但是无法由false改为true
+把enumerable设置成false可以保证属性不会出现在对象的属性枚举中。
+
+### 不变性
