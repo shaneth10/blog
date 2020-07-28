@@ -88,3 +88,40 @@ Object.defineProperty('myObject', 'a', {
 把enumerable设置成false可以保证属性不会出现在对象的属性枚举中。
 
 ### 不变性
+
+- 对象常量
+```
+var myObject = {}
+Object.defineProperty(myObject, 'x', {
+  value: 42,
+  writable: false,
+  configurable: false
+})
+```
+
+- 禁止扩展
+可以用Object.preventExtebsions(..)禁止一个对象添加新属性
+```
+var myObject = {
+  a: 2
+}
+Object.preventExtensions(myObject)
+myObject.b = 3
+myObject.b // undefined 严格模式下就会抛出TypeError错误
+```
+
+- 密封
+Object.seal(..)会创建一个密封的对象，这个方法实际上会在一个现有对象上调用Object.preventExtensions(..)并把所有属性标记为configurable: false
+
+- 冻结
+Object.freeze(..)会创建一个冻结对象，这个方法实际上会在一个现有对象上调用Object.seal(..)并把所有“数据访问”属性标记为writable: false，这样就无法修改他们的值。
+
+### [[Get]]
+
+```
+var myObject = {
+  a: 2
+}
+myObject.a = 2 // 2
+```
+myObject.a是一次属性访问，但是这条语句并不仅仅是在myObject中查找名字为a的属性。实际上实现了[[Get]]操作（有点像函数调用：```[[Get]]()```）
