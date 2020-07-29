@@ -152,3 +152,4 @@ var myObject = {
 myObject.a = 2
 myObject.a // 4
 ```
+在这个例子中，实际上我们把赋值操作中的值2存储到了另一个变量_a_中，而如果缺少setter/getter函数的话，赋值/获取值的操作就不会生效。
