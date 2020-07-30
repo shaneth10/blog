@@ -153,3 +153,21 @@ myObject.a = 2
 myObject.a // 4
 ```
 在这个例子中，实际上我们把赋值操作中的值2存储到了另一个变量_a_中，而如果缺少setter/getter函数的话，赋值/获取值的操作就不会生效。
+
+### 存在性
+
+我们可以在不访问属性值的情况下判断对象中是否存在这个属性：
+```
+var myObject = {
+  a: 2
+}
+("a" in myObject) // true
+("b" in myObject) // false
+
+myObject.hasOwnProperty("a") // true
+myObject.hasOwnProperty("b") // false
+```
+in会检查属性是否在对象及其原型链中。而hasOwnProperty(..)只会检查属性是否在myObject对象中，不会检查原型链。
+propertyIsEnumberable(..)会检查给定的属性名是否直接存在于对象中（而不是在原型链上）并且满足enumberable:true。Object.keys(..)会返回一个数组，包含所有可枚举属性，Object.getOwnPropertyNames(..)会返回一个数组，包含所有属性，无论他们是否可枚举。in和hasOwnProperty(..)的区别在于是否查找原型链，然而，Object.keys(..)和Object.getOwnPropertyNames(..)都只会查找对象直接包含的属性。
+
+## 遍历
