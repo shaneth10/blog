@@ -171,3 +171,17 @@ in会检查属性是否在对象及其原型链中。而hasOwnProperty(..)只会
 propertyIsEnumberable(..)会检查给定的属性名是否直接存在于对象中（而不是在原型链上）并且满足enumberable:true。Object.keys(..)会返回一个数组，包含所有可枚举属性，Object.getOwnPropertyNames(..)会返回一个数组，包含所有属性，无论他们是否可枚举。in和hasOwnProperty(..)的区别在于是否查找原型链，然而，Object.keys(..)和Object.getOwnPropertyNames(..)都只会查找对象直接包含的属性。
 
 ## 遍历
+
+遍历数组下标时采用的是数字顺序（for循环或者其他迭代器），但是遍历对象属性时的顺序是不确定的，在不同的JavaScript引擎中可能不一样。因此，在不同的环境中需要保证一致性时，一定不要相信任何观察到的顺序，他们是不可靠的。
+
+```
+var myArray = [1,2,3]
+var it = myArray[Symbol.iterator]()
+
+it.next() // { value: 1, done: false }
+it.next() // { value: 2, done: false }
+it.next() // { value: 3, done: false }
+it.next() // { done: true }
+```
+> 我们使用ES6中的符号Symbol.iterator来获取对象的@@iterator内部属性。引用类似iterator的特殊属性时要使用符号名，而不是符号包含的值。此外，虽然看起来很像一个对象，但是@@iterator本身并不是一个迭代器对象，而是一个返回迭代器对象的函数。
+> 和数组不同，普通的对象没有内置的@@iterator，所以无法完成```for...of```遍历。
