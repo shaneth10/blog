@@ -189,3 +189,43 @@ it.next() // { done: true }
 
 # 混合对象“类”
 
+## 构造函数
+
+类实例是有一个特殊的类方法构造的，这个方法通常和类名相同，被称为构造函数。这个方法的任务就是初始化构造需要的所有信息。
+```
+class CollGuy {
+  specialTrick = nothing
+
+  CoolGuy( trick ) {
+    specialTrick = trick
+  }
+
+  showOff() {
+    output( "Here's my trick: ", specialTrick )
+  }
+}
+```
+我们可以调用类构造函数来生成一个CoolGuy实例：
+```
+Joe = new CoolGuy( "jumping rope" )
+Joe.showOff // 这是我的绝技：跳绳
+```
+> 注意：CoolGuy类有一个CoolGuy()构造函数，执行new CoolGuy()时实际上调用的就是它。构造函数会返回一个对象。
+> 类构造函数属于类，。此外，构造函数大多需要用new来调，这样语言引擎才知道你想要构造一个新的类实例。
+
+## 类的继承
+
+在面向类的语言中，你可以先定义一个类，然后定义一个继承前者的类。定义好一个子类之后，相对于父类来说就是一个独立并且完全不同的类。子类会包含父类行为的原始副本，但是也可以重写所有继承的行为甚至定义新行为。
+```
+class Vehicle {
+  engines = 1
+  ignition() {
+    output( "Turning on my engine." )
+  }
+  drive() {
+    ignition()
+    output( "Steering and moving forward" )
+  }
+}
+```
+
