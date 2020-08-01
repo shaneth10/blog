@@ -227,5 +227,33 @@ class Vehicle {
     output( "Steering and moving forward" )
   }
 }
+
+class Car inherits Vehicle {
+  wheels = 4
+  drive() {
+    inherited: drive()
+    output( "Rolling on all", wheels, "wheels!" )
+  }
+}
+
+class SppedBoats inherits Vehicle {
+  engines = 1
+  ignition() {
+    output( "Turning on my", engines, "engines." )
+  }
+  pilot() {
+    inherited: drive()
+    output( "Speeding throungh the water with ease!" )
+  }
+}
 ```
+
+### 多态
+
+### 多重继承
+
+## 混入
+
+### 显示混入
+
 
