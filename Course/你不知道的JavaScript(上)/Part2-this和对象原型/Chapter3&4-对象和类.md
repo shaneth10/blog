@@ -256,4 +256,6 @@ class SppedBoats inherits Vehicle {
 
 ### 显示混入
 
+多态、混合复制、寄生继承
 
+### 隐式混入
