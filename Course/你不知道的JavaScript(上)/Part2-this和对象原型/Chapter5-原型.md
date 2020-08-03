@@ -38,3 +38,5 @@ myObject.a; // 3
 myObject.hasOwnProperty("a"); // true
 ```
 myObject.a++分解为myObject.a=myObject.a+1
+
+###
