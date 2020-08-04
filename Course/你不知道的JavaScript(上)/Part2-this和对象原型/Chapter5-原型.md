@@ -39,4 +39,30 @@ myObject.hasOwnProperty("a"); // true
 ```
 myObject.a++分解为myObject.a=myObject.a+1
 
-###
+## “类”
+
+JavaScript中只有对象，根本不存在类。
+
+### “类”函数
+“类”函数利用了函数的一种特殊特性：所有的函数默认都会拥有一个名为prototype的公有并且不可枚举的属性，它会指向另一个对象：
+```
+function Foo() {
+  // ...
+}
+
+Foo.prototype // []
+```
+这个对象通常被称为Foo的原型，因为我们通过名为Foo.prototype的属性引用来访问它。
+最直接的解释就是，这个对象是在调用new Foo()时创建的，最后会被关联到这个Foo.prototype对象上。
+```
+function Foo() {
+  // ...
+}
+
+var a = new Foo()
+
+Object.getPrototypeOf( a ) === Foo.prototype // true
+```
+调用new Foo()时会创建a，其中一步就是将a内部的Prototype链接到Foo.prototype所指向的对象
+
+### “构造函数”
