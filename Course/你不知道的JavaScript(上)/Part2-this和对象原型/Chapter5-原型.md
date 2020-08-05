@@ -66,3 +66,27 @@ Object.getPrototypeOf( a ) === Foo.prototype // true
 调用new Foo()时会创建a，其中一步就是将a内部的Prototype链接到Foo.prototype所指向的对象
 
 ### “构造函数”
+函数本身并不是构造函数，然而，当你在普通的函数调用前面加上new关键字之后，就会把这个函数调用变成一个“构造函数调用”。实际上，new会劫持所有普通函数并用构造函数的形式来调用它。
+```
+function NothingSpecial() {
+  console.log( "Don't mind me!" )
+}
+var a = new NothingSpecial()
+// Don't mind me
+
+a // {}
+```
+> NothingSpecial只是一个普通函数，但是使用new函数时，它就会构造一个对象并赋值给a，这看起来就像是new的一个副作用。这个调用是一个构造函数调用，但是NothingSpecial本身并不是一个构造函数。
+> 换句话说，在JavaScript中对于“构造函数”最准确的解释是，所有带new的函数调用。
+> 函数不是构造函数，但是当且仅当使用new时，函数调用会变成“构造函数调用”。
+
+### 技术
+Foo.prototype的.constructor属性只是Foo函数在声明时的默认属性。如果你创建了一个新对象并替换了默认的.prototype对象引用，那么新对象并不会自动获得.constructor属性。
+```
+function Foo() {}
+Foo.prototype = {} //创建一个新原型对象
+var a1 = new Foo()
+a1.constructor === Foo // false
+a1.constructor === Object // true
+```
+> a1并没有.constructor属性，所以它会委托prototype链上的Foo.prototype。但是这个对象也没有该属性，所以它会继续委托，这次会委托给委托链的顶端Object.prototype。这个对象有.constructor属性，指向内置的Object(...)函数
