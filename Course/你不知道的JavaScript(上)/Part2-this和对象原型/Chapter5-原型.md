@@ -90,3 +90,34 @@ a1.constructor === Foo // false
 a1.constructor === Object // true
 ```
 > a1并没有.constructor属性，所以它会委托prototype链上的Foo.prototype。但是这个对象也没有该属性，所以它会继续委托，这次会委托给委托链的顶端Object.prototype。这个对象有.constructor属性，指向内置的Object(...)函数
+> .constructor并不是一个不可变属性。它是不可枚举的，但是它的值是可写的。此外，你可以给任意Prototype链中的人以对象添加一个名为constructor的属性或者对其进行修改，你可以任意对其赋值。.constructor是一个非常不可靠并且不安全的引用。
+
+## （原型）继承
+
+```
+function Foo(name) {
+  this.name = name
+}
+
+Foo.prototype.myName = function() {
+  return this.name
+}
+
+function Bar(name, label) {
+  Foo.call(this, name)
+  this.label = label
+}
+
+// 我们创建了一个新的Bar.prototype对象并关联到Foo.prototype
+Bar.prototype = Object.create(Foo.prototype)
+
+// 注意！现在没有Bar.prototype.constructor了
+Bar.prototype.myLabel = function() {
+  return this.label
+}
+
+var a = new Bar('a', 'obj a')
+
+a.myName() // 'a'
+a.myLabel // 'obj a'
+```
