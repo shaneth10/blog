@@ -121,3 +121,4 @@ var a = new Bar('a', 'obj a')
 a.myName() // 'a'
 a.myLabel // 'obj a'
 ```
+这段代码的核心部分就是语句Bar.prototype = Object.create(Foo.prototype)。调用Object.create(...)回凭空创建一个“新”对象并把新对象内部的Prototype关联到指定的对象中
