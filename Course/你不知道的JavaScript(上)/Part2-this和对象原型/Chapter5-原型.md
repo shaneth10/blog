@@ -122,3 +122,25 @@ a.myName() // 'a'
 a.myLabel // 'obj a'
 ```
 这段代码的核心部分就是语句Bar.prototype = Object.create(Foo.prototype)。调用Object.create(...)回凭空创建一个“新”对象并把新对象内部的Prototype关联到指定的对象。
+
+注意，下面两种方式是常见的错误做法，实际上它们都存在一些问题：
+```
+// 喝你想要的机制不一样！
+Bar.prototype = Foo.prototype
+
+// 基本上满足你的需求，但是可能会产生一些副作用：
+Bar.prototype = new Foo()
+```
+```Bar.prototype = Foo.prototype```并不会创建一个关联到Bar.prototype的新对象，它只是让Bar.prototype直接饮用Foo.prototype对象。所以，可以直接使用Foo就可以了，这样代码也会更简单一些。
+```Bar.prototype = new Foo()```的确会创建一个关联到Bar.prototype的新对象。但是它使用了Foo(...)的“构造函数调用”，如果函数Foo有一些副作用的话，就会影响到Bar()的后代。
+因此。要创建一个合适的关联对象，我们必须创建使用Object.create(...)而不是使用具有副作用的Foo(...)。ES6添加了辅助函数Object.setPrototypeOf(...)，可以用标准并且可靠的方法来修改关联。
+我们来对比一下两种关联方法：
+```
+// ES6之前需要抛弃默认的Bar.prototype
+Bar.prototype = Object.create(Foo.prototype)
+
+// ES6开始可以直接修改现有的Bar.prototype
+Object.setPrototypeOf(Bar.prototype, Foo.prototype)
+```
+
+### 检查“类”关系
