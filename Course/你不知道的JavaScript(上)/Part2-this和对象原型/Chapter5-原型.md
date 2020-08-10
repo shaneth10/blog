@@ -140,7 +140,38 @@ Bar.prototype = new Foo()
 Bar.prototype = Object.create(Foo.prototype)
 
 // ES6开始可以直接修改现有的Bar.prototype
-Object.setPrototypeOf(Bar.prototype, Foo.prototype)
+Object.setPrototypeOf(Bar.prototype, Foo.prototype)       
 ```
 
 ### 检查“类”关系
+
+```Foo.prototype.isPrototypeOf(a) // true```
+isPrototypeOf(..)回答的问题是：在a的整条Prototype链中是否出现过Foo.prototype。
+我们也可以直接获取一个对象的Prototype链。在Es5中，标准的方法是：
+```Object.getPrototypeOf(a)```
+可以验证一下，这个对象引用是否和我们想的一样：
+```Object.getPrototypeOf(a) === Foo.prototype // true```
+绝大多数浏览器也支持一种非标准的方法来访问内部Prototype属性：
+```a.__proto__ === Foo.prototype // true```
+这个奇怪的.__proto__属性引用了内部的Prototype对象，如果你想查找原型链的话，这个方法非常有用。
+
+此外，.__proto__看起来很像一个属性，但是实际上它更像一个getter/setter。.__proto__的实现大致上是这样的：
+```
+Object.defineProperty(Object.prototype, "__proto__", {
+  get: function() {
+    return Object.getPropertyOf(this)
+  },
+  set: function(o) {
+    // ES6中的setPrototypeOf(..)
+    Object.setPrototypeOf(this, o)
+    return o
+  }
+})
+```
+因此，访问a.__proto__时，实际上是调用了a.__proto__()(调用getter函数)。虽然getter函数存在于Object.prototype对象中，但是它的this指向对象a，所以和Object.getPrototypeOf(a)结果相同。
+
+## 对象关联
+
+Prototype机制就是存在于对象中的一个内部链接，它会引用其他对象。通常来说，这个链接的作用是：如果在对象上没有找到需要的属性或者方法引用，引擎就会继续在Prototype关联的对象上进行查找。同理，如果在后者中也没有找到需要的引用就会继续查找它的Prototype，以此类推。这一系列对象的链接被称为“原型链”。
+
+### 创建关联
