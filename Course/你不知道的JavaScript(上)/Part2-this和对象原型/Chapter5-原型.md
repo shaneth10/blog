@@ -175,3 +175,16 @@ Object.defineProperty(Object.prototype, "__proto__", {
 Prototype机制就是存在于对象中的一个内部链接，它会引用其他对象。通常来说，这个链接的作用是：如果在对象上没有找到需要的属性或者方法引用，引擎就会继续在Prototype关联的对象上进行查找。同理，如果在后者中也没有找到需要的引用就会继续查找它的Prototype，以此类推。这一系列对象的链接被称为“原型链”。
 
 ### 创建关联
+```
+var foo = {
+  something: function() {
+    console.log("Tell me something good...")
+  }
+}
+
+var bar = Object.create(foo)
+
+bar.somrthing() // Tell me something good
+```
+Object.create(..)会创建一个新对象（bar）并把它关联到我们指定的对象（foo）。Object.create(null)会创建一个拥有空连接的对象，这个对象无法进行委托。由于这个对象没有原型链，所以instanceof操作符无法进行判断，总是会返回false。这些对象通常被称作“字典”，它们完全不会受到原型链的干扰，因此非常适合用来存储数据。
+
