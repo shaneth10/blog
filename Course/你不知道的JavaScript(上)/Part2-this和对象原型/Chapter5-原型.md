@@ -188,3 +188,42 @@ bar.somrthing() // Tell me something good
 ```
 Object.create(..)会创建一个新对象（bar）并把它关联到我们指定的对象（foo）。Object.create(null)会创建一个拥有空连接的对象，这个对象无法进行委托。由于这个对象没有原型链，所以instanceof操作符无法进行判断，总是会返回false。这些对象通常被称作“字典”，它们完全不会受到原型链的干扰，因此非常适合用来存储数据。
 
+**Object.create()的polyfill代码**
+Object.create()实在ES5中新增的函数，所以在ES5之前的环境中如果要支持这个功能的话就需要polifill代码，部分实现Object.create()的功能：
+if (!Object.create) {
+  Object.create = function(o) {
+    function F() {}
+    F.prototype = o
+    return new F()
+  }
+}
+这段polyfill代码使用了一个一次性函数F，我们通过改写它的.prototype属性使其指向想要关联的对象，然后再使用new F()来构造一个新对象进行关联。
+
+### 关联关系是备用
+```
+var anotherObject = {
+  cool: function() {
+    console.log("cool!")
+  }
+}
+
+var myObject = Object.create(anotherObject)
+myObject.cool() // "cool!"
+```
+这段代码是可以正常运行的，但是看起来有点难以理解和维护，我们再看下面一段代码：
+```
+var anotherObject = {
+  cool: function() {
+    console.log("cool!")
+  }
+}
+
+var myObject = Object.create(anotherObject)
+
+myObject.doCool = function() {
+  this.cool() // 内部委托
+}
+
+myObject.doCool() // ”cool！“
+```
+这里我们调用的 myObject.doCool() 是实际存在于 myObject 中的，使我们的API设计更加清晰。从内部来说，我们的实现遵循的是委托设计模式，通过Prototype委托到anotherObject.cool()。
