@@ -1,7 +1,5 @@
 # 类型
 
-要正确合理地进行类型转换，我们必须掌握 JavaScript 中的各个类型及其内在行为。几乎所有的 JavaScript 程序都会涉及某种形式的强制类型转换。
-
 ## 内置类型
 
 JavaScript有七种内置类型，对象及其他几个普通类型：
@@ -31,3 +29,8 @@ typeof Symbol() === 'symbol'
 函数不仅是对象，还可以拥有属性。例如：```function a(b ,c) {}```。函数对象的 length 属性是其声明的参数个数：```a.length // 2```。因为该函数声明了两个命名参数， b 和 c ，所以其 length 值为2。
 
 数组也是 object 的一个子类型，数组的元素按数字顺序来进行索引，其 length 属性是元素的个数。
+
+## 值和类型
+
+### undefined 和 undeclared
+变量在未持有值的时候为 undefined 。即已在作用域中声明但还没有赋值的变量，是 undefined 的。相反，还没有在作用域中声明过的变量，是 undeclared 的。
