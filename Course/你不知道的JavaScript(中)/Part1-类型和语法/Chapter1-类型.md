@@ -34,3 +34,5 @@ typeof Symbol() === 'symbol'
 
 ### undefined 和 undeclared
 变量在未持有值的时候为 undefined 。即已在作用域中声明但还没有赋值的变量，是 undefined 的。相反，还没有在作用域中声明过的变量，是 undeclared 的。
+
+### typeof Undeclared
