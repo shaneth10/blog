@@ -43,3 +43,43 @@ if (typeof DEBUG !== "undefined") {
   console.log( "Debugging is starting" )
 }
 ```
+
+# 值
+
+## 数组
+
+和其他强类型语言不同，在 JavaScript 中，数组可以容纳任何类型的值，可以是字符串、数字、对象（object），甚至是其他数组。
+使用 delete 运算符可以将单元从数组中删除，但是数组的length不会变化。
+在创建”稀疏“数组时要注意：
+```
+var a = []
+
+a[0] = 1
+//此处没有设置a[1]单元
+a[2] = [3]
+
+a[1] // undefined
+
+a.length // 3
+```
+数组通过数字进行索引，但有趣的是它们也是对象，所以也可以包含字符串键值和属性（但这不计算在数组长度内）：
+```
+var a = []
+a[0] =1
+a['foobar'] = 2
+
+a.length // 1
+a['foobar'] // 2
+a.foobar // 2
+```
+如果说字符串键值能够被强制类型转换为十进制数字的话，它就会被当作数字索引来处理，比如说```a['13'] = 42```这种。
+
+### 类数组
+有时需要将类数组转换为真正的数组，这一般通过数组工具函数（如 indexOf()、concat()、forEach()等）来实现。ES6中有个Array.from()能实现这个功能：
+```
+console.log(Array.from('foo'));
+// expected output: Array ["f", "o", "o"]
+
+console.log(Array.from([1, 2, 3], x => x + x));
+// expected output: Array [2, 4, 6]
+```
