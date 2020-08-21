@@ -83,3 +83,29 @@ console.log(Array.from('foo'));
 console.log(Array.from([1, 2, 3], x => x + x));
 // expected output: Array [2, 4, 6]
 ```
+
+## 字符串
+
+字符串经常被当成字符数组，很多方法都能通用，比如说 indexOf()、concat() 等。
+```
+a.join // undefined
+a.map // undefined
+
+var c = Array.prototype.join.call(a, '-')
+var d = Array.prototype.map.call(a, function(v) {
+  return v.toUpperCase() + '.'
+}).join('')
+
+c // 'f-o-o'
+d // 'F.O.O'
+```
+以上这些函数是可以通过借用来使用的，但是也有一些无法借用。
+```
+a.reverse // undefined
+Array.prototype.reverse.call(a)
+// 返回值任然是字符串”foo“的一个封装对象
+```
+但是我们可以用变通的方法先将字符串转换为数组，待处理完后再将结果转换回字符串：
+```
+var c = a.split('').reverse().join('')
+```

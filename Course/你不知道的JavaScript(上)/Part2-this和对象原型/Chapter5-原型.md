@@ -184,7 +184,7 @@ var foo = {
 
 var bar = Object.create(foo)
 
-bar.somrthing() // Tell me something good
+bar.something() // Tell me something good
 ```
 Object.create(..)会创建一个新对象（bar）并把它关联到我们指定的对象（foo）。Object.create(null)会创建一个拥有空连接的对象，这个对象无法进行委托。由于这个对象没有原型链，所以instanceof操作符无法进行判断，总是会返回false。这些对象通常被称作“字典”，它们完全不会受到原型链的干扰，因此非常适合用来存储数据。
 
