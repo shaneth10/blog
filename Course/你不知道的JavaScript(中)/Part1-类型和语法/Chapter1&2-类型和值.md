@@ -109,3 +109,61 @@ Array.prototype.reverse.call(a)
 ```
 var c = a.split('').reverse().join('')
 ```
+
+## 数字
+
+```
+0.1 + 0.2 === 0.3 // false
+```
+> 二进制浮点数中的0.1和0.2并不是十分精确，它们相加的结果并非刚好等于0.3，而是一个比较接近的数字0.300000...0004，所以结果为false。  
+> 最常用的方法是设置一个误差范围值，通常称为“机器精度”，对 JavaScript 的数字来说，这个值通常是2^-52。  
+从 ES6 开始，该值定义在 Number.EPSILON 中，我们可以直接拿来用，也可以为 ES6 之前的版本写 polifill:
+```
+if (!Number.EPSILON) {
+  Number.EPSILON = Math.pow(2, -52)
+}
+```
+可以使用 Number.EPSILON 来比较两个数字是否相等（在指定的误差范围内）：
+```
+function numbersCloseEnoughToEqual(n1, n2) {
+  return Math.abs(n1 - n2) < Number.EPSILON
+}
+var a = 0.1 + 0.2
+var b = 0.3
+
+numbersCloseEnoughToEqual(a, b) // true
+numbersCloseEnoughToEqual(0.0000001, 0.0000002) // false
+```
+
+要检测一个值是否是整数，可以使用 ES6 中的 NUmber.isInteger(..) 方法：
+```
+Number.isInteger(42) // true
+Number.isInteger(42.3) // false
+```
+
+polyfill 方法：
+```
+if (!Number.isInteger) {
+  Number.isInteger = function(num) {
+    return typeof num == "Number" && num % 1 === 0
+  }
+}
+```
+
+要检测一个值是否是安全的整数，可以使用 ES6 中的 Number.isSafeInteger(..) 方法：
+```
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER) // true
+Number.isSafeInteger(Math.pow(2, 53)) // false
+Number.isSafeInteger(Math.pow(2, 53) - 1) // true
+```
+
+polifill 方法：
+```
+if (!Number.isSafeInteger) {
+  Number.isSafeInteger = function(num) {
+    return Number.isInteger(num) && Math.abs(num) <= Number.MAX_SAFE_INTEGER
+  }
+}
+```
+
+a | 0 可以将变量 a 的数字转换为32位有符号整数，因为数位运算符 | 只适用于32位整数
