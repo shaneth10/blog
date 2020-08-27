@@ -185,3 +185,8 @@ Object.is(a, NaN) // true
 Object.is(b, -0) // true
 Object.is(b, 0) // false
 ```
+
+## 值和引用
+
+简单值总是通过值赋值的方式来赋值/传递，包括 null 、 undefined 、字符串、数字、布尔和 ES6 中的 symbol。  
+复合值--对象和函数，则总是通过引用复制的方式来赋值/传递。
