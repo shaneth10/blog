@@ -167,3 +167,21 @@ if (!Number.isSafeInteger) {
 ```
 
 a | 0 可以将变量 a 的数字转换为32位有符号整数，因为数位运算符 | 只适用于32位整数 
+
+## 特殊数值
+
+undefined 和 null ，他们的名称既是类型也是值。
+- undefined 指从未赋值
+- null 指曾赋过值，但是目前没有值
+
+如果数字运算的操作数不是数字类型，就无法返回一个有效的数字，这种情况下返回值为 NaN 。NaN 是一个特殊值，它和自身不相等，可以用 isNaN() 来判断一个值是否是 NaN ，不过很多 JavaScript 程序都可能存在 NaN 方面的问题，所以我们应该尽量使用 Number.isNaN(...) 这样可靠的方法。
+
+ES6 中新加入了一个工具方法 Object.is(..) 来判断两个值是否绝对相等，可以用来处理上述所有的特殊情况：
+```
+var a = 2 / 'foo'
+var b = -3 * 0
+
+Object.is(a, NaN) // true
+Object.is(b, -0) // true
+Object.is(b, 0) // false
+```
