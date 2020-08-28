@@ -190,3 +190,27 @@ Object.is(b, 0) // false
 
 简单值总是通过值赋值的方式来赋值/传递，包括 null 、 undefined 、字符串、数字、布尔和 ES6 中的 symbol。  
 复合值--对象和函数，则总是通过引用复制的方式来赋值/传递。
+
+# 原生函数
+
+常用的原生函数有：
+- String()
+- Number()
+- Boolean()
+- Array()
+- Object()
+- Function()
+- RegExp()
+- Date()
+- Error()
+- Symbol()--ES6中新加入的  
+
+实际上，它们就是内建函数。
+原生函数可以被当做构造函数来使用，但其构造出来的对象可能会和我们设想的有所出入：
+```
+var a = new String('abc')
+typeof a // 是object，不是String
+a instanceof String // true
+Object.prototype.toSting.call(a) // '[object String]'
+```
+通过构造函数创建出来的是封装了基本类型值的封装对象。
