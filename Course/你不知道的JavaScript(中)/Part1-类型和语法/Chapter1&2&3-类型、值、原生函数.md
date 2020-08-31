@@ -203,7 +203,7 @@ Object.is(b, 0) // false
 - RegExp()
 - Date()
 - Error()
-- Symbol()--ES6中新加入的  
+- Symbol()--ES6中新加入的
 
 实际上，它们就是内建函数。
 原生函数可以被当做构造函数来使用，但其构造出来的对象可能会和我们设想的有所出入：
@@ -213,4 +213,24 @@ typeof a // 是object，不是String
 a instanceof String // true
 Object.prototype.toSting.call(a) // '[object String]'
 ```
-通过构造函数创建出来的是封装了基本类型值的封装对象。
+通过构造函数创建出来的是封装了基本类型值的封装对象。  
+如果想要得到封装对象中的基本类型值，可以使用 valueOf 函数：
+```
+var a = new String('abc')
+var b = new Number(42)
+var c = new Boolean(true)
+
+a.valueOf() // 'abc'
+b.valueOf() // 42
+c. valueOf() // true
+```
+
+## 原生函数作为构造函数
+
+### Array(..)
+构造函数 Array(..) 不要求必须带 new 关键字。不带时，它会被自动补上。因此 Array(1, 2, 3) 和 new Array(1, 2, 3) 的效果是一样的。 Array 构造函数只带一个数字参数的时候，该参数会被作为数组的预设长度，而非只充当数组中的一个元素。
+
+### object(..)、Function(..) 和 RegExp(..)
+除非万不得已，否则尽量不要使用 Object(..)/Function(..)/RegExp(..)。与前面的构造函数不同，RegExp() 有时还是很有用的，比如动态定义正则表达式时。
+
+### Date(..) 和 Error(..)
