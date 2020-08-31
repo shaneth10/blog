@@ -254,3 +254,12 @@ function foo(x) {
 ```
 
 ### Symbol(..)
+ES6 中新加入了一个基本数据类型—— 符号（Symbol）。符号是具有唯一性的特殊值，用它来命名对象属性不容易导致重名。   
+符号并非对象，而是一种简单标量基本类型。
+```
+var mysym = Symbol('my own symbol')
+mysym // Symbol(my own symbol)
+```
+
+### 原生原型
+原生构造函数有自己的 .prototype 对象，如 Array.prototype、String.prototype 等。
