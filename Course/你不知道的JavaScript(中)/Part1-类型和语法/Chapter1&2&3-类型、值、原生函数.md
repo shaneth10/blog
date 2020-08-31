@@ -234,3 +234,23 @@ c. valueOf() // true
 除非万不得已，否则尽量不要使用 Object(..)/Function(..)/RegExp(..)。与前面的构造函数不同，RegExp() 有时还是很有用的，比如动态定义正则表达式时。
 
 ### Date(..) 和 Error(..)
+创建日期对象必须使用 new Date()。Date(..) 可以带参数，用来指定日期和时间。  
+Date(..) 主要用来获得当前的时间戳，该值可以通过日期对象中的 getTime() 来获得。  
+从 ES5 开始引入了一个更简单的方法，即静态函数 Date.now()。对 ES5 之前的版本我么可以使用 polyfill:
+```
+if (!Date.now) {
+  Date.now = function() {
+    return (new Date()).getTime()
+  }
+}
+```
+构造函数 Error(..)带不带 new 关键字都可，错误对象通常与 throw 一起使用：
+```
+function foo(x) {
+  if (!x) {
+    throw new Error('x wasn't provided')
+  }
+}
+```
+
+### Symbol(..)
