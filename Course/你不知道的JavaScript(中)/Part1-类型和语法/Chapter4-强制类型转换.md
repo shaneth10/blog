@@ -38,3 +38,29 @@ undefined、null、false、+0 -0 和 NaN、""
 真值就是假值列表之外的值。
 
 ## 显式强制类型转换
+
+### 字符串和数字之间的显式转换
+字符串和数字之间的转换是通过 String(..) 和 Number(..) 这两个内建函数来实现的，它们前面没有 new 关键字，并不创建封装对象。  
++c 是 + 运算符的一元形式。+ 运算符显式地将 c 转换为数字，而非数字加法运算。
+- 日期显式转换为数字
+```
+var timestamp = +new Date()
+var timestamp = new Date().getTime()
+var timestamp = Date.now() // ES5中新加入的静态方法
+
+// 老版本浏览器提供 Date.now() 的 polifill 也很简单：
+if (!Date.now) {
+  Date.now = function() {
+    return +new Date()
+  }
+}
+```
+
+- 奇特的~运算符
+- 字位截除
+
+### 显示转换为布尔值
+Boolean(..) 是显式的 ToBoolean 强制类型转换。
+
+## 隐式强制类型转换之一 - || 和 && 
+
