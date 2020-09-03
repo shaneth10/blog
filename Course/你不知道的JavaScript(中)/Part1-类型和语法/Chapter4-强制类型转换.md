@@ -120,3 +120,25 @@ if (Boolean(a)) {}
 ```
 
 - null 和 undefined 之间的相等比较
+在 == 中 null 和 undefined 是一回事，可以相互进行隐式强制类型转换
+
+- 对象和非对象之间的相等比较
+如果 Type(x) 是字符串或者数字，Type(y) 是对象，则返回 x == ToPrimitive(y) 的结果  
+但有一些值不这样，原因是 == 算法中其他优先级更高的规则。例如：
+```
+var a = null
+var b = Object(a) // 和Object()一样
+a == b // false
+
+var c = undefined
+var d = Object(c) 
+c == d // false
+
+var e = NaN
+var f = Object(e)
+e == f // false
+```
+因为没有对应的封装对象，所以 null 和 undefined 不能够被封装，Object(null) 和 Object() 均返回一个常规对象。  
+NaN 能够被封装为数字封装对象，但拆封之后 NaN == NaN 返回 false，因为 NaN 不等于 NaN。
+
+### 比较少见的情况
