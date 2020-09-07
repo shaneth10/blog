@@ -143,3 +143,42 @@ NaN 能够被封装为数字封装对象，但拆封之后 NaN == NaN 返回 fal
 
 ### 比较少见的情况
 - 返回其他数字
+```
+Number.prototype.valueOf = function() {
+  return 3
+}
+
+new NUmber(2) == 3 // true
+```
+> 2 == 3 不会有这样的问题，因为 2 和 3 都是数字基本类型值，不会调用 Number.prototype.valueOf() 方法。而 Number(2) 涉及 ToPrimitive 强制类型转换，因此会调用 valueOf()。
+
+- 假值的相等比较
+```
+"0" == false // true
+"0" == 0 // true
+
+false == 0 // true
+false == "" // true
+false == [] // true
+
+"" == 0 // true 
+"" == [] // true
+
+0 == [] // true
+```
+
+- 极端情况
+```
+[] == ![] // true
+
+2 == [2] // true
+"" == [null] // true
+
+"true" == true // false
+42 == "42" // true
+"foo" == ["foo"] // true
+```
+
+- 安全运用隐式强制类型转换
+如果两边的值中有 true 或者 false，千万不要使用 == ;如果两边的值中有 []、"" 或者 0，尽量不要使用 ==。  
+这时最好用 === 来避免不经意的强制类型转换。这两个原则可以让我们避开几乎所有强制类型转换的坑。
