@@ -28,3 +28,41 @@ delete obj.a // true
 obj.a // undefined
 ```
 如果操作成功，delete 返回 true，否则返回 false。其副作用是属性被从对象中删除（或者单元从 array 中删除）。
+
+### 上下文规则
+
+- 大括号
+（1）对象常量   
+用大括号定义对象常量，{...} 被赋值给变量，因而它是一个对象常量。  
+（2）标签
+
+- 代码块
+```
+[] + {} // "[object Object]"
+{} + [] // 0
+```
+以上代码涉及到强制类型转换
+
+- 对象解构
+```
+function getData() {
+  return {
+    a: 42,
+    b: "foo"
+  }
+}
+
+var {a, b} = getData()
+console.log(a, b) // 42 "foo"
+```
+```{a, b} = ..```就是 ES6 中的解构赋值，相当于下面的代码：
+```
+var res = getData()
+var a = res.a
+var b = res.b
+```
+
+- else if 和可选代码块
+else if 极为常见，能省掉一层代码缩进，所以很受亲睐。但这只是我们自己发明的用法，切勿想当然的认为这些都属于 JavaScript 语法的范畴。
+
+## 运算符优先级
