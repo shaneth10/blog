@@ -73,3 +73,8 @@ build(builds)
 先从配置文件读取配置，在通过命令行参数对构建配置做过滤
 
 ## Runtime Only VS Runtime + Compiler
+
+- Runtime Only
+我们在使用 Runtime Only 版本的 Vue.js 的时候，通常需要借助如 webpack 的 vue-loader 工具把 .vue 文件编译成 JavaScript，因为是在编译阶段做的，所以它只包含运行时的 Vue.js 代码，因此代码体积也会更轻量。
+
+- Runtime + Compiler
