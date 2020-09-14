@@ -57,3 +57,7 @@ listen('click', function handler(evt) {
 这种代码常常被称为回调函数，有时也被称为毁灭金字塔，得名于嵌套缩进产生的横向三角形状。
 
 ## 信任问题
+
+## 省点回调
+
+# Promise
