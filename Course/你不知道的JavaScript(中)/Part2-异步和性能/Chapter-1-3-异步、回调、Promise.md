@@ -61,3 +61,51 @@ listen('click', function handler(evt) {
 ## 省点回调
 
 # Promise
+
+通过回调表达程序异步和管理并发的两个主要缺陷：缺乏顺序性和可信任性。所以，我们就要请出Promise，绝大多数 JavaScript/DOM 平台新增的异步 API 都是基于 Promise 构建的。
+
+## 什么是Promise
+
+### 未来值
+- 现在值与将来值
+- Promise
+```
+function add(xPromise, yPromise) {
+  // Promise.all([])接受一个promise数组并返回一个新的promise,这个新的promise等待数组中的所有promise完成
+  return Promise.all([xPromise, yPromise])
+
+  // 这个promise决议之后，我们取得收到的X和Y值并加在一起
+  .then(function(values) {
+    // values是来自于之前决议的promisesei的消息数组
+    return values[0] + values[1]
+  })
+}
+
+// fetch()和fetch()返回相应值的promise，可能已经就绪，也可能以后就绪
+add(fetchX(), fetchY())
+
+// 我们得到一个这两个数组的和的promise
+// 现在链式调用 then(..) 来等待返回promise的决议
+.then(function(sum) {
+  console.log(sum)
+})
+```
+fetchX()和fetchY()是直接调用的，它们的返回值promise被传给 add(..)。这些 promise 代表的底层值的可用时间可能是现在或将来。   
+第二层是 add(..) (通过 Promise.all([ .. ])) 创建并返回的 promise。我们可以通过调用 then(..) 等待这个 promise。add(..) 运算完成后，未来值 sum 就准备好了，可以打印出来。   
+通过 Promise，调用 then(..) 实际上可以接受两个函数，第一个用于完成情况，第二个用于拒绝情况：
+```
+add( fetchX(), fetchY())
+.then(
+  // 完成处理函数
+  function(sum) {
+    console.log( sum )
+  },
+
+  // 拒绝处理函数
+  function(err) {
+    console.log( err )
+  }
+)
+```
+如果在获取 x 和 y 的过程中出错，或者在加法过程中出错，add(..) 返回的就是一个被拒绝的 promise，传给 then(..) 的第二个错误处理回调就会从这个 promise 中得到拒绝值。  
+Promise 是一种封装和组合未来值的易于复用的机制。
