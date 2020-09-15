@@ -108,4 +108,30 @@ add( fetchX(), fetchY())
 )
 ```
 如果在获取 x 和 y 的过程中出错，或者在加法过程中出错，add(..) 返回的就是一个被拒绝的 promise，传给 then(..) 的第二个错误处理回调就会从这个 promise 中得到拒绝值。  
-Promise 是一种封装和组合未来值的易于复用的机制。
+Promise 是一种封装和组合未来值的易于复用的机制。  
+
+### 完成事件
+在典型的 JavaScript 风格中，如果需要侦听某个通知，你可能就会想到事件。因此，可以把对通知的需求重新组织为对 foo(..) 发出的一个完成事件的侦听。  
+使用回调的话，通知就是任务（foo(..)）调用的回调。而是用 Promise 的话，我们把这个关系反转了过来，侦听来自 foo(..) 的事件，然后在得到通知的时候，根据情况继续。  
+
+- Promise "事件"
+```
+function foo(x) {
+  // 做一些可能耗时的工作
+
+  // 构造并返回一个 promise
+  return new Promise( function(resolve, reject) {
+    // 最终调用 resolve(..) 或者 reject(..)
+    // 这是这个 promise 的决议回调
+  })
+}
+
+var p = foo(42)
+
+bar(p)
+
+baz(p)
+```
+> new Promise(function() {}) 模式通常称为 revealing constructor 。传入的函数会立即执行，它有两个参数，在本例中我们将其分别称为 resolve 和 reject。这些是 promise 的决议函数。resolve(..) 通常标识完成，而 reject(..) 则标识拒绝。
+
+## 具有 then 方法的鸭子类型
