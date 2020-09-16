@@ -161,3 +161,30 @@ Promise 的特性就是专门用来为这些问题提供一个有效的可复用
 - 调用次数过少或过多
 - 未能传递参数/环境值
 - 吞掉错误或异常
+- 是可信任的 Promise 吗
+```
+var p1 = new Promise(function(resolve, reject) {
+  resolve(42)
+})
+var p1 = Promise.resolve( 42 )
+var p2 = Promise.resolve( p1 )
+
+p1 === p2 // true
+```
+Promise.resolve(..) 可以接受任何 thenable，将其解封为它的非 thenable 值。从 Promise.resolve(..) 得到的是一个真正的Promise，是一个可以信任的值。如果你传入的已经是真正的 Promise，那么你得到的就是它本身，所以通过 Promise.resolve(..) 过滤来获得可信任性完全没有坏处。  
+Promise.resolve(..) 提供了可信任的 Promise 封装工具，可以链接使用：
+```
+// 不要只是这么做：
+foo(42)
+.then( function(v) {
+  console.log(v)
+})
+
+// 而要这么做：
+Promise.resolve(foo(42))
+.then( function(v) {
+  console.log(v)
+})
+```
+
+## 链式流
