@@ -135,3 +135,29 @@ baz(p)
 > new Promise(function() {}) 模式通常称为 revealing constructor 。传入的函数会立即执行，它有两个参数，在本例中我们将其分别称为 resolve 和 reject。这些是 promise 的决议函数。resolve(..) 通常标识完成，而 reject(..) 则标识拒绝。
 
 ## 具有 then 方法的鸭子类型
+
+识别 Promise 就是定义某种称为 thenable 的东西，将其定义为任何具有 then(..) 方法的对象和函数。我们认为，任何这样的值就是 Promise 一致的 thenable。  
+根据一个值的形态对这个值的类型做出一些设定。这种类型检查一般用术语鸭子类型来表示。于是，对 thenable 值的鸭子类型检测就大致类似于：
+```
+if (
+  p !== null && (
+    typeof p === "object" ||
+    typeof p === "function"
+  ) && typeof p.then === "function"
+) {
+  // 假定这是一个 thenable!
+} else {
+  // 不是 thenable
+}
+```
+
+## Promise 信任问题
+
+Promise 的特性就是专门用来为这些问题提供一个有效的可复用的答案
+
+- 调用过早
+- 调用过晚
+- 回调未调用
+- 调用次数过少或过多
+- 未能传递参数/环境值
+- 吞掉错误或异常
