@@ -188,3 +188,19 @@ Promise.resolve(foo(42))
 ```
 
 ## 链式流
+```
+var p = Promise.resolve(21)
+
+p.then(function(v) {
+  console.log(v) // 21
+
+  // 用42完成连接的promise
+  return v * 2
+})
+
+// 这里是链接的promise
+.then(function(v) {
+  console.log(v) // 42
+})
+```
+现在第一个 then(..) 就是异步序列中的第一步，第二个 then(..) 就是第二步。这可以一直任意扩展下去。只要保持把先前的 then(..) 连到自动创建的每一个 Promise 即可。
