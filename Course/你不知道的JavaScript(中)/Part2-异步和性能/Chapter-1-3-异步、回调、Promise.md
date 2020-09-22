@@ -215,3 +215,14 @@ then(null, function(err) { .. }) 这个模式--只处理拒绝，但又把完成
 
 对多数开发者来说，错误处理最自然的形式就是同步的 try...catch 结构。遗憾的是，它只能是同步的，无法用于异步代码模式。
 
+## Promise 模式
+
+### Promise.all([ .. ])
+
+all([..]) 这种模式可以实现等待两个或更多并行/并发的任务都完成才能继续。它们的完成顺序并不重要，但是必须都要完成，才能让流程控制继续。  
+Promise.all([ .. ]) 需要一个参数，是一个数组，通常由 Promise 实例组成。从 Promise.all([ .. ]) 调用返回的 promise 会收到一个完成消息。这是一个由所有传入 promise 的完成消息组成的数组，与指定的顺序一致。  
+> 从 Promise.all([ .. ]) 返回的主 promise 在且仅在所有的成员 promise 都完成后才会完成。如果这些 promise 中有任何一个被拒绝的话，主 Promise.all([ .. ])promise 就会立即被拒绝，并丢弃来自其他所有 promise 的全部结果。所以，永远要记住为每个 promise 关联一个拒绝/错误处理函数，特别是从 Promise.all([ .. ]) 返回的那一个。
+
+### Promise.race([ .. ])
+
+有时你会想只响应“第一个跨过终点线的 Promise ”，而抛弃其他 Promise。这种模式在 Promise 中称为竞态。
