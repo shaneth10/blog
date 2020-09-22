@@ -225,4 +225,73 @@ Promise.all([ .. ]) 需要一个参数，是一个数组，通常由 Promise 实
 
 ### Promise.race([ .. ])
 
-有时你会想只响应“第一个跨过终点线的 Promise ”，而抛弃其他 Promise。这种模式在 Promise 中称为竞态。
+有时你会想只响应“第一个跨过终点线的 Promise ”，而抛弃其他 Promise。这种模式在 Promise 中称为竞态。与 Promise.all([ .. ]) 类似，一旦有任何一个 Promise 
+决议为完成，Promise.race([ .. ]) 就会完成；一旦有任何一个 Promise 决议为拒绝，它就会拒绝。而且千万不要传入一个空数组，否则它将永远不会决议。
+
+- 1.超时竞赛
+```
+// foo() 是一个支持 Promise 的函数
+// 前面定义的 timeoutPromise(..) 返回一个 promise，
+// 这个promise会在指定延时之后拒绝
+// 为 foo 设定延时
+Promise.race([
+  foo(), // 启动foo()
+  timeoutPromise( 3000 ) // 给它 3 秒钟
+]).then(
+  function() {
+    // foo(..)按时完成
+  },
+  function(err) {
+    // 要么foo()被拒绝，要么只是没能够按时完成，
+    // 因此要查看err了解具体原因
+  }
+)
+```
+
+- 2.finally
+有些开发者提出，Promise 需要一个 finally(...) 回调注册，这个回调在 Promise 决议后总是会被调用，并且允许你执行任何必要的清理工作。类似于：
+```
+var p = Promise.resolve(42)
+
+p.then(something)
+.finally(cleanup)
+.then(another)
+.finally(cleanup)
+```
+为了避免出现未处理拒绝的问题，我们可以构建一个静态辅助工具来支持查看 Promise 的决议：
+```
+// polyfill 安全的 guard 检查
+if (!Promise.observe) {
+  Promise.observe = function(pr, cb) {
+    // 观察 pr 的决议
+    pr.then(
+      function fullfilled(msg) {
+        // 安排异步回调
+        Promise.resolve(msg).then(cb)
+      },
+      function rejected(err) {
+        // 安排异步回调
+        Promise.resolve(err).then(cb)
+      }
+    )
+
+    // 返回最初的 Promise
+    return pr
+  }
+}
+```
+
+下面是如何使用这个工具：
+```
+Promise.race([
+  Promise.observe(
+    foo(),
+    function cleanup(msg) {
+      // 在 foo 之后清理，即使它没有在超时之前完成
+    }
+  ),
+  timeoutPromise(3000) // 给它3秒钟
+])
+```
+
+### all([ .. ]) 和 race([ .. ]) 的变体
