@@ -295,3 +295,4 @@ Promise.race([
 ```
 
 ### all([ .. ]) 和 race([ .. ]) 的变体
+虽然原生 ES6 Promise 中提供了内建的 Promise.all([ .. ]) 和 Promise.race([ .. ])，但这些语义还有其他几个常见的变体模式。
