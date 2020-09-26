@@ -43,3 +43,15 @@ const fn = arr => {
 }
 fn(arr);
 ```
+
+## 02、数组去重
+
+```
+const arr = [1, 1, '1', 17, true, true, false, false, 'true', 'a', {}, {}];
+// => [1, '1', 17, true, false, 'true', 'a', {}, {}]
+```
+
+### 方法一：利用Set
+```
+const res1 = Array.from(new Set(arr));
+```
