@@ -53,5 +53,23 @@ const arr = [1, 1, '1', 17, true, true, false, false, 'true', 'a', {}, {}];
 
 ### 方法一：利用Set
 ```
-const res1 = Array.from(new Set(arr));
+const res1 = Array.from(new Set(arr)); // set对象存储的值总是唯一的
+```
+
+### 两层 for 循环+splice
+```
+const unique1 = arr => {
+  let len = arr.length;
+  for (let i = 0; i < len; i++) {
+    for (let j = i + 1; j < len; j++) {
+      if (arr[i] === arr[j]) {
+        arr.splice(j, 1);
+        // 每删除一个树，j--保证j的值经过自加后不变。同时，len--，减少循环次数提升性能
+        len--;
+        j--;
+      }
+    }
+  }
+  return arr;
+}
 ```
