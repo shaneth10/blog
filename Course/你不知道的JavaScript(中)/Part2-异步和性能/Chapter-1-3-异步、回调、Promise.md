@@ -340,3 +340,14 @@ var p1 = Promise.resolve( filfilledTh ) // 是完成的 promise
 var p2 = Promise.resolve( rejectedTh ) // 是拒绝的 promise
 ```
 > 如果传入的是真正的 Promise，Promise.resolve(..) 什么都不会做，只会直接把这个值返回。
+
+### then(..) 和 catch(..)
+每个 Promise 实例都有 then(..) 和catch(..) 方法。通过这两个方法可以为这个 Promise 注册完成和拒绝处理函数。Promise 决议后，会立即调用这两个函数之一，但不会两个都调用，而且总是异步回调。  
+then(..) 接受一个或两个参数：第一个用于完成回调，第二个用于拒绝回调。catch(..) 只接受一个拒绝回调作为参数，并自动替换默认完成回调。默认完成回调只是把消息传递下去，而默认拒绝回调则只是重新抛出其接收到的出错原因。
+catch(..) 只接受一个拒绝回调作为参数，并自动替换默认完成回调。换句话说，它等价于 then(null, ..):
+```
+p.then( fulfilled )
+p.then( fulfilled, rejected )
+p.catch( rejected ) // p.then(null, rejected)
+```
+如果完成或拒绝回调中抛出异常，返回的 promise 是被拒绝的。如果任意一个回调返回非 promise、非thenable 的立即值，这个值会被用作返回 promise 的完成值。如果完成处理函数返回一个 promise 或 thenable，那么这个值会被展开，并作为返回 promise 的决议值。
