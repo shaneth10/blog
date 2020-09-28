@@ -312,3 +312,31 @@ Promise.race([
 ### 并发迭代
 有些时候会需要在一列 Promise 中迭代，并对所有 Promise 都执行某个任务，非常类似于对同步数组可以做的那样。  
 在这个 map(..) 实现中，不能发送异步拒绝信号，但如果在映射的回调内出现同步的异常或错误，主 Promise.map(..) 返回的 promise 就会拒绝。
+
+## Promise API 概述
+
+### new Promise(..) 构造器
+有启示性的构造器 Promise(..) 必须和 new 一起使用，并且必须提供一个函数回调。这个回调是同步的或立即调用的。这个函数接受两个函数回调，用以支持 promise 的决议。通常我们把这两个函数称为 resolve(..) 和 reject(..):
+```
+var p = new Promise( function(resolve, reject) {
+  // resolve(..) 用于决议/完成这个 promise
+  // reject(..) 用于拒绝这个 promise
+})
+```
+reject(..) 就是拒绝这个 promise；但 resolve(..) 既可以完成 promise，也可以拒绝，要根据传入参数而定。如果传给 resolve(..) 的是一个真正的 Promise 或 thenable 值，这个值就会被递归展开，并且（要构造的）promise将取用其最终决议值或状态。
+
+### Promise.resolve(..) 和 Promise.reject(..)
+创建一个已被拒绝的 Promise 的快捷方式是使用 Promise.reject(..)，所以以下两个 promise 是等价的：
+```
+var p1 = new Promise( function(resolve, reject) {
+  reject('oops')
+})
+
+var p2 = Promise.reject('oops)
+```
+Promise.resolve(..) 也会展开 thenable 值。在这种情况下，返回的 Promise 采用传入的这个 thenable 的最终决议值，可能是完成，可能是拒绝：
+```
+var p1 = Promise.resolve( filfilledTh ) // 是完成的 promise
+var p2 = Promise.resolve( rejectedTh ) // 是拒绝的 promise
+```
+> 如果传入的是真正的 Promise，Promise.resolve(..) 什么都不会做，只会直接把这个值返回。
