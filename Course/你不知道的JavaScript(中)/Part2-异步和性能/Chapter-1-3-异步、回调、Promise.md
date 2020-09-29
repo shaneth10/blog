@@ -351,3 +351,16 @@ p.then( fulfilled, rejected )
 p.catch( rejected ) // p.then(null, rejected)
 ```
 如果完成或拒绝回调中抛出异常，返回的 promise 是被拒绝的。如果任意一个回调返回非 promise、非thenable 的立即值，这个值会被用作返回 promise 的完成值。如果完成处理函数返回一个 promise 或 thenable，那么这个值会被展开，并作为返回 promise 的决议值。
+
+### promise.all([ .. ]) 和 Promise.race([ .. ])
+这两个函数都会创建一个 Promise 作为它们的返回值。这个 promise 的决议完全由传入的 promise 数组控制。  
+若向 Promise.all([ .. ]) 传入空数组，它会立即完成，但 Promise.race([ .. ]) 会挂住，且永远不会决议。
+
+## Promise 局限性（大概了解）
+
+- 顺序错误处理
+- 单一值
+- 单决议
+- 惯性
+- 无法取消的 Promise
+- Promise 性能
