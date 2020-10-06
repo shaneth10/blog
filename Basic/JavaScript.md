@@ -73,3 +73,47 @@ const unique1 = arr => {
   return arr;
 }
 ```
+
+### 利用 indexOf
+```
+const unique2 = arr => {
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (res.indexOf(arr[i]) === -1) res.push(arr[i]);
+  }
+  return res;
+}
+```
+当然也可以用include、filter，思路大同小异。
+```
+const unique3 = arr => {
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (!res.includes(arr[i])) res.push(arr[i]);
+  }
+  return res;
+}
+
+const unique4 = arr => {
+  return arr.filter((item, index) => {
+    return arr.indexOf(item) === index;
+  });
+}
+```
+
+### 利用 Map
+```
+const unique5 = arr => {
+  const map = new Map();
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (!map.has(arr[i])) {
+      map.set(arr[i], true)
+      res.push(arr[i]);
+    }
+  }
+  return res;
+}
+```
+
+## 03、类数组转化为数组
