@@ -193,3 +193,40 @@ var x = function bar() {
 因为 IIFE 就是一个函数，而且函数会创建新的变量作用域，所以使用 IIFE 的这种风格也常用于声明不会影响 IIFE 外代码的变量，IIFE 也可以有返回值。
 
 ### 2.5.2 闭包
+你可以将闭包看作”记忆“并在函数运行完毕后继续访问这个函数作用域（其变量）的一种方法。
+```
+function makeAdder(x) {
+  // 参数x是一个内层变量
+
+  // 内层函数add()使用x，所以它外围有一个”闭包“
+  function add(y) {
+    return y + x
+  }
+
+  return add
+}
+```
+每次调用外层 makeAdder(..) 返回的、指向内层 add(..) 函数的引用能够记忆传入 makeAdder(..) 的 x 值。
+
+**模块**  
+在 JavaScript 中，闭包最常见的应用是模块模式。模块允许你定义外部不可见的私有实现细节（变量、函数），同时也可以提供允许从外部访问的公开 API。 
+```
+function User() {
+  var username, password
+
+  function doLogin(user, pw) {
+    username = user
+    password = pw
+  }
+
+  var publicAPI = {
+    login: doLogin
+  }
+
+  return publicAPI
+}
+
+var fred = User()
+
+fred.login('fred', '123456')
+```
