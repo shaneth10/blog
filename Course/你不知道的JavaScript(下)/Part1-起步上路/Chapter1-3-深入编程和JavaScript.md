@@ -230,3 +230,14 @@ var fred = User()
 
 fred.login('fred', '123456')
 ```
+
+## 2.6 this标识符
+
+虽然 this 一般与”面向对象的模式“相关，但 JavaScript 中的 this 则是另外一种机制。  
+如果一个函数内部有一个 this 引用，那么这个 this 通常指向一个对象。this 并不指向这个函数本身，意识到这一点非常重要，因为这是最常见的误解。  
+- 1.在非严格模式下，foo() 最后会将 this 设置为全局对象。在严格模式下，这是未定义的行为，在访问 bar 属性时会出错——因此”global“是为 this.bar 创建的值。
+- 2.obj1.foo() 将 this 设置为对象 obj1。
+- 3.foo.call(obj2) 将 this 设置为对象 obj2。
+- 4.new foo() 将 this 设置为一个全新的空对象。
+
+## 2.7 原型
