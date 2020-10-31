@@ -264,4 +264,4 @@ bar.a // 42 <-- 委托给 foo
 
 JavaScript 更新有一部分代码是新增的，旧版浏览器不一定会支持这样的特性。你可以使用两种主要的技术，即 polyfilling 和 transpilling，向旧版；浏览器”引入“新版的JavaScript 特性。
 
-### 2.8.1 polyfilling
+### 2.8.1 polyfilling 
