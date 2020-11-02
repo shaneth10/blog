@@ -273,3 +273,10 @@ polyfill 用于表示根据新特性的定义，创建一段与之行为等价�
 有很多很棒的 transpiler 可供选择。以下是编写本部分时几个很好的选择：
 - Babel 从 ES6+ 编译转换到 ES5
 - Traceur 将 ES6、ES7及后续版本转换到 ES5
+
+## 2.9 非 JavaScript
+现实情况中，大多数的 JavaScript 都是编写用于在浏览器这样的环境中运行并与之交互的。严格来说，你编写的代码很大一部分并不直接由 JavaScript 控制。你将遇到的最常见的非 JavaScript 就是 DOM.API。举例来说：  
+```
+var el = document.getElementById("foo")
+```
+当你的代码在浏览器中运行时，变量 document 作为一个全局变量存在。它既不是由 JavaScript 引擎提供的，也不由 JavaScript 标准控制。它是一个特殊对象，通常被称为”宿主对象“。
