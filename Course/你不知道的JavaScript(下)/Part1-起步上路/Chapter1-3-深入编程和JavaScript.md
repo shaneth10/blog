@@ -265,3 +265,11 @@ bar.a // 42 <-- 委托给 foo
 JavaScript 更新有一部分代码是新增的，旧版浏览器不一定会支持这样的特性。你可以使用两种主要的技术，即 polyfilling 和 transpilling，向旧版；浏览器”引入“新版的JavaScript 特性。
 
 ### 2.8.1 polyfilling 
+polyfill 用于表示根据新特性的定义，创建一段与之行为等价但能够在旧的 JavaScript 环境中运行的代码。NaN 是整个语言中唯一和自身不相等的值。因此，NaN 是使得 x != x 为真的唯一值。
+
+### 2.8.2 transpiling
+语言中新增的语法是无法进行 polyfilling 的。新语法在旧版 JavaScript 引擎上回抛出未识别/无效错误。  
+因此。更好的方法是，通过工具将新版代码转换为等价的旧版代码。这个过程通常被称为”transpiling“。它是由 transforming 和 compiling 组合而成的术语。
+有很多很棒的 transpiler 可供选择。以下是编写本部分时几个很好的选择：
+- Babel 从 ES6+ 编译转换到 ES5
+- Traceur 将 ES6、ES7及后续版本转换到 ES5
