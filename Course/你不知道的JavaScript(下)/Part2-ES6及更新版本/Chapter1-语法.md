@@ -48,3 +48,17 @@ console.log( a ) // 2
 ```
 
 ### 2.1.3 块作用于函数
+从 ES6 开始，块内声明的函数，其作用域在这个块内。   
+```
+{
+  foo() // 可以这么做
+
+  function foo() {
+    // ..
+  }
+}
+
+foo() // ReferenceError
+```
+
+## 2.2 spread/rest
