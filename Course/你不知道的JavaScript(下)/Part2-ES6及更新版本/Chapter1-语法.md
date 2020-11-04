@@ -62,3 +62,5 @@ foo() // ReferenceError
 ```
 
 ## 2.2 spread/rest
+
+ES6 引入了一个新的运算符 ...，通常称为 spread 或 rest 运算符，取决于它在哪/如何使用。
