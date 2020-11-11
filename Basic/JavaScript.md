@@ -139,3 +139,5 @@ Array.prototype.slice.call(document.querySelectorAll('div'))
 ```
 Array.prototype.concat.apply([], document.querySelectorAll('div'))
 ```
+
+## 04.Array.prototype.filter()
