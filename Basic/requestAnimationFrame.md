@@ -1,7 +1,9 @@
 # requestAnimationFrame 略知一二
 
-```window.requestAnimationFrame()``` 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画（即根据传入的回调函数，需再次调用 ```window.requestAnimationFrame()``` ，实际上就是递归的形式）。  
+```window.requestAnimationFrame()``` 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画（即根据传入的回调函数，需再次调用 ```window.requestAnimationFrame()``` ，实际上就是递归的形式）。    
+
 而这个回调函数的执行次数通常是每秒60次，但在不同浏览器中，回调函数执行次数通常与浏览器屏幕刷新次数相匹配。  
+
 回调函数会传入 ```DOMHighResTimeStamp``` 参数，它指示当前被 ```requestAnimationFrame()``` 排序的回调函数被触发的时间，回调函数会接收到一个时间戳，最小进度为 1ms 。
 
 **使用示例：**  
@@ -91,11 +93,16 @@ raf_test()
 比如上面这段代码，我们让raf执行了100次，在执行完后计算出执行依次的间隔时间。这样的操作需要考虑到预处理问题，避免在测试过程中影响用户体验。
 
 **解决抓金牛游戏中遇到的动画问题**  
-背景：在开发抓金牛活动时，遇到在安卓低版本手机特别是魅族手机中，发现牛的跑动速度非常慢，预期分批从屏幕跑过的牛一股脑全出现在了屏幕上。  
-分析问题：由于顶部倒计时是准确的，而牛每帧移动的像素也是确定的，可以断定是 requestAnimationFrame 的刷新频率太低了。  
-解决方案：对出现问题的机型（安卓）及版本（安卓6.1以下）采用降低频率的方法，使用setInterval 方法，降低频率到125ms调用一次，问题解决。  
-反思及优化：虽然该兼容方法经历住了活动投放十四天的考验，但我总觉得这么处理也不是完美的方法，我还有个方法是将 setTimeout 和 requestAnimationFrame 相结合，但没在项目中使用过。  
-大致思路：动画用 requestAnimationFrame 执行，并且用间隔为 1000/60 的 setTimeout 执行，如果 requestAnimationFrame 执行了，那么 setTimeout 下一次就不执行。也就是整体是用 setTimeout 来执行动画，到了浏览器页面渲染的刷新时间的时候，用 requestAnimationFrame 替代 setTimeout 执行，保证关键帧不掉帧，之后继续由 setTimeout 执行。这样的话，就能保证动画的执行速率基本一致，并且对于浏览器渲染刷新的关键帧也不掉帧，一定程度上提高了动画的流畅度。
+**背景**：在开发抓金牛活动时，遇到在安卓低版本手机特别是魅族手机中，发现牛的跑动速度非常慢，预期分批从屏幕跑过的牛一股脑全出现在了屏幕上。  
+
+**分析问题**：由于顶部倒计时是准确的，而牛每帧移动的像素也是确定的，可以断定是 requestAnimationFrame 的刷新频率太低了。  
+
+**解决方案**：对出现问题的机型（安卓）及版本（安卓6.1以下）采用降低频率的方法，使用setInterval 方法，降低频率到125ms调用一次，问题解决。  
+
+**反思及优化**：虽然该兼容方法经历住了活动投放十四天的考验，但我总觉得这么处理也不是完美的方法，我还有个方法是将 setTimeout 和 requestAnimationFrame 相结合，但没在项目中使用过。  
+
+**大致思路**：动画用 requestAnimationFrame 执行，并且用间隔为 1000/60 的 setTimeout 执行，如果 requestAnimationFrame 执行了，那么 setTimeout 下一次就不执行。也就是整体是用 setTimeout 来执行动画，到了浏览器页面渲染的刷新时间的时候，用 requestAnimationFrame 替代 setTimeout 执行，保证关键帧不掉帧，之后继续由 setTimeout 执行。这样的话，就能保证动画的执行速率基本一致，并且对于浏览器渲染刷新的关键帧也不掉帧，一定程度上提高了动画的流畅度。
+
 ```
 let sraf_flag = true
 
