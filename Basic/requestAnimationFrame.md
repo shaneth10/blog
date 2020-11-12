@@ -17,3 +17,8 @@ function step(timestamp) {
 
 window.requestAnimationFrame(step);
 ```
+
+## 与 setInterval 的区别
+
+- 1.FPS
+  - setInterval可以手动设定FPS，而requestAnimationFrame则会根据浏览器及设备性能自动设定FPS。
