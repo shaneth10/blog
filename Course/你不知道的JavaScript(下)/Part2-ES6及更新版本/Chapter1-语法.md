@@ -201,4 +201,49 @@ var { model: { User } } = App
 这个技术已经接近于命名参数了，因为这里对象的属性映射到了同名的解构参数。这也意味着我们免费得到了可选参数功能；可以看到，省略”参数“x就像我们期望的那样工作。  
 当然，前面介绍的包括嵌套解构、默认值等等都可用于参数解构。解构还可以和其他的 ES6 函数参数功能同时使用，比如默认参数值和 rest/gather 参数。  
 
-**1.解构默认值+参数默认值**  
+**1.解构默认值+参数默认值**    
+```
+function f6({ x = 10 } = {}, { y } = { y: 10 }) {
+  console.log( x, y )
+}
+
+f6() // 10 10
+f6(undefined, undefined) // 10 10
+f6( {}, undefined ) // 10 10
+
+f6( {}, {} ) // 10 undefined
+f6( undefined, {} ) // 10 undefined
+
+f6( {x: 2}, {y: 3} ) // 2 3
+```
+为什么会这样呢？作为函数参数默认值的{ y: 10 }值是一个对象，而不是结构默认值。因此，它只在第二参数没有传入，或者传入 undefined 的时候才会生效。  
+在前面的代码中，我们传入了第二个参数（{}），所以没有使用默认值{ y: 10 }，而是在传入的空对象值{}上进行{ y }解构。   
+
+**2.嵌套默认：解构并重组**   
+有一个很有趣的为嵌套对象属性设置默认值的技巧：使用对象解构以及我称之为重组的技术。如果我们把所有属性彻底解构到顶层变量中，接着就可以立即重组他们来重新构造原来的嵌套对象结构了。  
+```
+// 把 defaults 合并进 config
+{
+  // (带默认值赋值的)解构
+  let {
+    options: {
+      remove = defaults.options.remove,
+      enable = defaults.options.enable,
+      instance = defaults.options.instance
+    } = {},
+    log: {
+      warn = defaults.log.warn
+      error = defaults.log.error
+    }
+  } = config
+
+  // 重组
+  config = {
+    options: { remove, enable, instance },
+    log: { warn, error }
+  }
+}
+```
+> 还可以用箭头代替一般的 {} 块和 let 声明来实现块封装。解构赋值/默认值会被放在参数列表中，而重组的过程会被放在函数体的 return 语句中。
+
+## 对象字面量扩展
