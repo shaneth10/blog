@@ -170,3 +170,55 @@ Array.prototype.filter = function(callback, thisArg) {
   return res;
 }
 ```
+
+## 05.Array.prototype.map()
+```
+array.map(function(currentValue,index,arr), thisValue)
+```
+
+```
+Array.prototype.map = function(callback, thisArg) {
+  if (this == undefined) {
+    throw new TypeError('this is null or not defined');
+  }
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+  const res = [];
+  // 同理
+  const O = Object(this);
+  const len = O.length >>> 0;
+  for (let i = 0; i < len; i++) {
+    if (i in O) {
+      // 调用回调函数并传入新数组
+      res[i] = callback.call(thisArg, O[i], i, this);
+    }
+  }
+  return res;
+}
+```
+
+## 06.Array.prototype.forEach()
+```
+array.forEach(function(currentValue, index, arr), thisValue)
+```
+forEach跟map类似，唯一不同的是forEach是没有返回值的。  
+```
+Array.prototype.forEach = function(callback, thisArg) {
+  if (this == null) {
+    throw new TypeError('this is null or not defined');
+  }
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + ' is not a function');
+  }
+  const O = Object(this);
+  const len = O.length >>> 0;
+  let k = 0;
+  while (k < len) {
+    if (k in O) {
+      callback.call(thisArg, O[k], k, O);
+    }
+    k++;
+  }
+}
+```
