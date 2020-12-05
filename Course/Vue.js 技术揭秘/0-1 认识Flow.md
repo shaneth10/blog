@@ -26,7 +26,7 @@ Flow 检查上述代码会报错，因为函数 split 期待的参数是字符�
 ```
 function add(x: number, y: number): number {
   return x + y
-}
+}   
 
 add('Hello', 11)
 ```
