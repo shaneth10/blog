@@ -29,3 +29,6 @@ function defineReactive(data, key, val) {
   })
 }
 ```
+定义一个响应式数据，在函数中进行变化追踪。每当从 data 的 key 中读取数据时，get 函数被触发；每当往 data 的 key 中设置数据时， set 函数被触发。
+
+## 如何收集依赖
