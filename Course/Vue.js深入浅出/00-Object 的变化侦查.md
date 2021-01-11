@@ -56,3 +56,5 @@ function defineReactive(data, key, val) {
 所以，其实不管是用户执行的 vm.$watch('a.b.b', (value, oldValue) => {})，还是模板中用到的data，都是通过 Watcher 来通知自己是否需要发生变化。
 
 ## 递归侦测所有 key
+
+将数据中的所有属性都侦测到，所以要封装一个 Observer 类。这个类的作用是将一个数据内的所有属性都转换成 getter/setter 的形式，然后去追踪他们的变化。
