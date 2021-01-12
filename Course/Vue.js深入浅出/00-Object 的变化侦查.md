@@ -67,3 +67,9 @@ function defineReactive(data, key, val) {
 
 当 data 中的属性发生变化时，与这个属性对应的依赖就会接收到通知。也就是说，只要我们将一个 object 传到 Observer 中，那么这个 object 就会变成响应式的 object。
 
+## 关于 Object 的问题
+
+Vue.js 通过 Object.defineProperty 来将对象的 key 转换成 getter/setter 的形式来追踪变化，但 getter/setter 只能追踪一个数据是否被修改，无法追踪新增属性和删除属性，所以才会导致无法侦测到变化。
+
+因为在 ES6 之前，JavaScript 没有提供元编码的能力，无法侦测到一个新属性被添加到了对象中，也无法侦测到一个属性从对象中删除了。为了解决这个问题，Vue.js 提供了两个 API —— vm.$set 与 vm.$delete 。
+
