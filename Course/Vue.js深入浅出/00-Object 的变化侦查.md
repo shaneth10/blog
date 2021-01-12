@@ -73,3 +73,21 @@ Vue.js 通过 Object.defineProperty 来将对象的 key 转换成 getter/setter 
 
 因为在 ES6 之前，JavaScript 没有提供元编码的能力，无法侦测到一个新属性被添加到了对象中，也无法侦测到一个属性从对象中删除了。为了解决这个问题，Vue.js 提供了两个 API —— vm.$set 与 vm.$delete 。
 
+## 总结
+
+Object 可以通过 Object.defineProperty 将属性转换成 getter/setter 的形式来追踪变化。读取数据时会触发 getter，修改数据时会触发 setter。
+
+我们需要在 getter 中收集有哪些依赖使用了数据。当 setter 被触发时，去通知 getter 中收集的依赖数据发生了变化。
+
+收集依赖需要为依赖找一个存储依赖的地方，为此我没让你创建了 Dep，它用来收集依赖、删除依赖和向依赖发送消息等。
+
+所谓的依赖，其实就是 Watcher。只有 Watcher 触发的 getter 才会收集依赖，哪个 Watcher 触发了 getter ，就把哪个 Watcher 收集到 Dep 中。当数据发生变化时，会循环依赖列表，把所有 Watcher 都通知一遍。
+
+Data 通过 Observer 转换成了 getter/setter 的形式来追踪变化。
+
+当外界通过 Watcher 读取数据时，会触发 getter 从而将 Watcher 添加到依赖中。
+
+当数据发生了变化时，会触发 setter，从而向 Dep 中的依赖（Watcher）发送通知。
+
+Watcher 接收到通知后，会向外界发送通知，变化通知到外界后可能会触发视图更新，也有可能触发用户的某个回调函数等。
+
