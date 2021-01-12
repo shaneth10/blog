@@ -58,3 +58,12 @@ function defineReactive(data, key, val) {
 ## 递归侦测所有 key
 
 将数据中的所有属性都侦测到，所以要封装一个 Observer 类。这个类的作用是将一个数据内的所有属性都转换成 getter/setter 的形式，然后去追踪他们的变化。
+
+定义一个 Observer 类，它用来将一个正常的 object 转换成被侦测的 object。
+
+然后判断数据的类型，只有 Object 类型的数据才会调用 walk 将每一个属性转换成 getter/setter 的形式来侦测变化。
+
+最后，在 defineReactive 中新增 new Observer(val) 来递归紫属性，这样我们就可以把 data 中的所有属性都转换成 getter/setter 的形式来侦测变化。
+
+当 data 中的属性发生变化时，与这个属性对应的依赖就会接收到通知。也就是说，只要我们将一个 object 传到 Observer 中，那么这个 object 就会变成响应式的 object。
+
