@@ -24,3 +24,6 @@ patch 的目的其实是修改 DOM 节点，也可以理解为渲染视图。pat
 ### 小结
 
 整个 patch 的过程并不复杂。当 oldValue 不存在时，直接使用 vnode 渲染视图；当 oldValue 和 vnode 都存在但并不是同一个节点时，使用 vnode 创建的 DOM 元素替换旧的 DOM 元素；当 oldValue 和 vnode 是同一个节点时，使用更详细的对比操作对真实的 DOM 节点进行更新。
+
+## 创建节点
+
