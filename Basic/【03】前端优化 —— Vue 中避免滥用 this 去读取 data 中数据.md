@@ -69,11 +69,11 @@ function pushTarget(target) {
 
 在 Dep.target 存在时去执行这些滥用 this 去读取 data 中数据的代码会产生性能问题，故还要搞清楚这些代码是写在哪里才会被执行到，换句话来说，要搞清楚在哪里滥用 this 去读取 data 中数据会产生性能问题。
 
-在第二小节中介绍了 Dep.target 被赋值后会执行 value = this.getter.call(vm, vm) ，其中 this.getter 是一个函数，那么若在其中有用 this 去读取 data 数据，就会去收集依赖，假如滥用的话就会产生性能问题。
+在第二小节中介绍了 Dep.target 被赋值后会执行 ```value = this.getter.call(vm, vm)``` ，其中 ```this.getter``` 是一个函数，那么若在其中有用 this 去读取 data 数据，就会去收集依赖，假如滥用的话就会产生性能问题。
 
-this.getter 是在创建依赖过程中赋值的，每种依赖的 this.getter 都是不相同的。下面来一一介绍。
+```this.getter``` 是在创建依赖过程中赋值的，每种依赖的 ```this.getter``` 都是不相同的。下面来一一介绍。
 
-- watch（侦听器）依赖的 this.getter 是 parsePath 函数，其函数参数就是侦听的对象。
+- watch（侦听器）依赖的 ```this.getter``` 是 ```parsePath``` 函数，其函数参数就是侦听的对象。
 
 ```
 var bailRE = new RegExp(("[^" + (unicodeRegExp.source) + ".$_\\d]"));
@@ -94,4 +94,185 @@ function parsePath(path) {
 }
 ```
 
-如下所示的代码中的 a 和 a.b.c 作为参数传入 parsePath 函数会返回一个函数赋值给 this.getter ，执行 this.getter.call(vm, vm) 会得到 this.a 和 this.a.b.c 的值。**在这个过程中不会存在滥用 this 去读取 data 中数据的场景。**
+如下所示的代码中的 ```a``` 和 ```a.b.c``` 作为参数传入 parsePath 函数会返回一个函数赋值给 ```this.getter``` ，执行 ```this.getter.call(vm, vm)``` 会得到 ```this.a``` 和 ```this.a.b.c``` 的值。**在这个过程中不会存在滥用 this 去读取 data 中数据的场景。**
+
+```
+watch:{
+  a:function(newVal, oldVal){
+    //做点什么
+  }
+}
+vm.$watch('a.b.c', function (newVal, oldVal) {
+  // 做点什么
+})
+```
+
+- computed（计算属性）依赖的 ```this.getter``` 有两种，如果计算属性的值是个函数，那么  ```this.getter``` 就是这个函数。如果计算属性的值是个对象，那么 ```this.getter``` 就是这个对象的 get 属性值， get 属性值也是个函数。在这个函数可能会存在滥用 this 去读取 data 中数据的场景，举个例子，代码如下所示。
+
+```
+computed:{
+    d:function(){
+        let result = 0;
+        for(let key in this.a){
+            if(this.a[key].num > 20){
+                result += this.a[key].num + this.b + this.c;
+            }else{
+                result += this.a[key].num + this.e + this.f;
+            }
+        }
+        return result;
+    }
+}
+```
+
+在计算属性 ```d``` 中就存在滥用 this 去读取 data 数据。其中 ```this.a``` 是个数组，此时 Dep.target 的值为计算属性 ```d``` 这个依赖，在循环 ```this.a``` 中使用 this 去获取中 ```a``` 、```b``` 、 ```c``` 、```e``` 、 ```f``` 的数据，使这些数据进行一系列复杂的逻辑运算来重复地收集计算属性 ```d``` 这个依赖。导致获取计算属性 ```d``` 的值的速度变慢，从而产生性能问题。
+
+- 渲染 Watcher 的 ```this.getter``` 是一个函数如下所示：
+
+```
+updateComponent = function() {
+  vm._update(vm._render(), hydrating);
+};
+```
+
+其中 ```vm._render()``` 会把 template 模板生成的渲染函数 render 转成虚拟 DOM（VNode） ： ```vnode = render.call(vm._renderProxy, vm.$createElement);```，举一个例子来说明一下渲染函数 render 是什么。
+
+例如template模板：
+
+```
+<template>
+  <div class="wrap">
+    <p>{{a}}<span>{{b}}</span></p>
+  </div>
+</template>
+```
+
+通过 vue-loader 会生成渲染函数 render ，如下所示：
+
+```
+(function anonymous() {
+    with(this) {
+        return _c('div', {
+            attrs: {
+                "class": "wrap"
+            }
+        }, [_c('p', [_v(_s(a)), _c('span', [_v(_s(b))])])])
+    }
+})
+```
+
+其中 ```with``` 语句的作用是为一个或一组语句指定默认对象，例 ```with(this){ a + b }``` 等同 ```this.a + this.b```，那么在 template 模板中使用 ```{{ a }}``` 相当使用 this 去读取 data 中的 ```a``` 数据。故在 template 模板生成的渲染函数 render 中也可能存在滥用 this 去读取 data 中数据的场景。举个例子，代码如下所示：
+
+```
+<template>
+  <div class="wrap">
+    <div v-for=item in list>
+      <div> {{ arr[item.index]['name'] }} </div>
+      <div> {{ obj[item.id]['age'] }} </div>
+    </div>
+  </div>
+</template>
+```
+
+其中用 ```v-for``` 循环 ```list``` 数组过程中，不断用 this 去读取 data 中 ```arr```、```obj``` 的数据，使这些数据进行一系列复杂的逻辑运算来重复收集这个依赖，导致初次渲染的速度变慢，从而产生性能问题。
+
+## 四、如何避免滥用this去读取data中数据
+
+综上所述在计算属性和 template 模板中滥用 this 去读取 data 中数据会导致多次重复地收集依赖，从而产生性能问题，那要怎么避免这种情况。
+
+- 计算属性中如何避免
+
+用 ES6 对象解构赋值来避免，计算属性的值是一个函数，其参数是 Vue 的实例化 ```this``` 对象，在上述计算属性中滥用 this 的例子中可以这样优化。
+
+**优化前：**
+
+```
+computed:{
+    d:function(){
+        let result = 0;
+        for(let key in this.a){
+            if(this.a[key].num > 20){
+                result += this.a[key].num + this.b + this.c;
+            }else{
+                result += this.a[key].num + this.e + this.f;
+            }
+        }
+        return result;
+    }
+}
+```
+
+**优化后：**
+
+```
+computed: {
+  d({ a, b, c, e, f }) {
+    let result = 0;
+    for (let key in a) {
+      if (a[key].num > 20) {
+        result += a[key].num + b + c;
+      } else {
+        result += a[key].num + e + f;
+      }
+    }
+    return result;
+  }
+}
+```
+
+以上利用解构赋值提前把 data 数据中的 ```a```、```b```、```c```、```e```、```f``` 赋值给对应的变量```a```、```b```、```c```、```e```、```f```，然后在计算属性中可以通过这些变量访问 data 数据的，且不会触发 data 中对应数据的依赖收集。这样只用 ```this``` 读取了一次 data 中的数据，只触发了一次依赖收集，避免了多次重复地依赖收集产生的性能问题。
+
+- template模板中如何避免
+
+提前处理 ```v-for``` 循环所用的数据，不要在 ```v-for``` 循环中去读取数组、对象类型的数据。在上述 template 模板中滥用 this 的例子中可以这样优化。
+
+假设 ```list```、```arr```、```obj``` 皆是服务端返回来的数据，且 ```arr``` 和 ```obj``` 没有用到任何模块渲染中，可以这样优化。
+
+**优化前：**
+
+```
+<template>
+  <div class="wrap">
+    <div v-for=item in list>
+      <div> {{ arr[item.index]['name'] }} </div>
+      <div> {{ obj[item.id]['age'] }} </div>
+    </div>
+  </div>
+</template>
+```
+
+**优化后：**
+
+```
+<template>
+  <div class="wrap">
+    <div v-for=item in listData>
+      <div{{item.name}} </div>
+        <div>{{item.age}}</div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      list: [],
+    }
+  },
+  created(){
+    // 在这里定义arr和obj避免被转成响应式
+    this.arr = [];
+    this.obj = {};
+  },
+  computed: {
+    listData: function ({list}) {
+      list.forEach(item => {
+        item.name = this.arr[item.index].name;
+        item.age = this.obj[item.id].age;
+      })
+      return list;
+    }
+  },
+}
+</script>
+```
