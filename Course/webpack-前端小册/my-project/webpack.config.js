@@ -18,6 +18,7 @@ module.exports = {
 
   module: {
     rules: [
+      // css 文件处理
       {
         test: /\.css/i,
         use: [
@@ -26,6 +27,28 @@ module.exports = {
           'css-loader',
         ],
       },
+      // less 文件处理
+      {
+        test: /\.less$/,
+        use: [
+          // 因为这个插件需要干涉模块转换的内容，所以需要使用它对应的 loader
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader',
+        ],
+      },
+      // 图片处理
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {},
+          },
+        ],
+      },
+      // 使用 babel
+      
     ],
   },
 
