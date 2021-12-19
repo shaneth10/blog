@@ -48,7 +48,18 @@ module.exports = {
         ],
       },
       // 使用 babel
-      
+      {
+        test: /\.jsx?/, // 支持 js 和 jsx 文件，使用 react 时需要
+        include: [
+          path.resolve(__dirname, 'src'), // 指定哪些路径下的文件需要经过 loader 处理
+        ],
+        use: {
+          loader: 'babel-loader', // 指定使用的 loader
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
     ],
   },
 
