@@ -116,3 +116,57 @@ module.exports = {
 ```
 ## resolve 配置
 
+- **resolve.alias**
+
+假设我们有个 `utils` 模块极其常用，经常编写相对路径很麻烦，希望可以直接 `import 'utils'` 来引用，那么我们可以配置某个模块的别名，如：
+
+```
+alias: {
+  utils: path.resolve(__dirname, 'src/utils') // 这里使用 path.resolve 和 __dirname 来获取绝对路径
+}
+```
+
+上述的配置是模糊匹配，意味着只要模块路径中携带了 utils 就可以被替换掉，如：
+
+```
+import 'utils/query.js' // 等同于 import '[项目绝对路径]/src/utils/query.js'
+```
+
+如果需要进行精确匹配可以使用：
+```
+alias: {
+  utils$: path.resolve(__dirname, 'src/utils') // 只会匹配 import 'utils'
+}
+```
+
+如果需要进行精确匹配可以使用：
+```
+alias: {
+  utils$: path.resolve(__dirname, 'src/utils') // 只会匹配 import 'utils'
+}
+```
+
+- **resolve.extensions**
+
+我们在引用模块时，其实可以直接这样：
+
+```
+import * as common from './src/utils/common'
+```
+
+webpack 会自行补全文件后缀，而这个补全的行为，也是可以配置的。
+
+```
+extensions: ['.wasm', '.mjs', '.js', '.json', '.jsx'],
+// 这里的顺序代表匹配后缀的优先级，例如对于 index.js 和 index.jsx，会优先选择 index.js
+```
+
+webpack 会尝试给你依赖的路径添加上 `extensions` 字段所配置的后缀，然后进行依赖路径查找，所以可以命中 src/utils/common.js 文件。
+
+但如果你是引用 src/styles 目录下的 common.css 文件时，如 `import './src/styles/common'`，webpack 构建时则会报无法解析模块的错误。
+
+你可以在引用时添加后缀，`import './src/styles/common.css'` 来解决，或者在 `extensions` 添加一个 `.css` 的配置：
+
+```
+extensions: ['.wasm', '.mjs', '.js', '.json', '.jsx', '.css'],
+```
