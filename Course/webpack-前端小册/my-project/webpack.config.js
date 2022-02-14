@@ -1,11 +1,27 @@
 const path = require('path')
+const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+// src/pages 目录为页面入口的根目录
+const pagesRoot = path.resolve(__dirname, './src/pages');
+
+console.log(pagesRoot);
+
+// fs 读取 pages 下的所有文件夹来作为入口，使用 entries 对象记录下来
+const entries = fs.readdirSync(pagesRoot).reduce((entries, page) => {
+  // 文件夹名称作为入口名称，值为对应的路径，可以省略 `index.js`，webpack 默认会寻找目录下的 index.js 文件
+  entries[page] = path.resolve(pagesRoot, page);
+  return entries;
+}, {});
+
+console.log(entries);
 
 module.exports = {
   mode: 'development', // 指定构建模式
 
-  entry: './src/index.js', // 指定构建入口文件
+  // entry: './src/index.js', // 指定构建入口文件
+  entry: entries,
 
   output: {
     path: path.resolve(__dirname, 'dist'), // 指定构建生成文件所在路径

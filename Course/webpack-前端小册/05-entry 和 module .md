@@ -52,3 +52,67 @@ module.exports = {
 前边我们已经提过，webpack 配置文件本质上是一个 Node 脚本，所以我们在里边是可以用 JS 代码来编写逻辑的，所以我们可以使用 Node 来实现根据目录文件夹来创建 webpack 构建入口。
 
 我们选择在项目的「src/」目录下创建一个新的文件夹名为「pages」，然后在「src/pages」下创建新的文件夹来作为入口存放的路径，例如「src/pages/foo/index.js」为一个新的页面入口，然后我们在配置里边可以这样来创建入口：
+
+```
+const path = require('path');
+const fs = require('fs');
+
+// src/pages 目录为页面入口的根目录
+const pagesRoot = path.resolve(__dirname, './src/pages');
+// fs 读取 pages 下的所有文件夹来作为入口，使用 entries 对象记录下来
+const entries = fs.readdirSync(pagesRoot).reduce((entries, page) => {
+  // 文件夹名称作为入口名称，值为对应的路径，可以省略 `index.js`，webpack 默认会寻找目录下的 index.js 文件
+  entries[page] = path.resolve(pagesRoot, page);
+  return entries;
+}, {});
+
+module.exports = {
+  // 将 entries 对象作为入口配置
+  entry: entries,
+
+  // ...
+};
+```
+上述做法可以支持你在「src/pages」下添加多个页面入口，而无需每次都修改 webpack 的配置文件，方便多页面或者大型项目使用。
+
+## module
+
+webpack 的初衷是让 js 支持模块化管理，并且将前端中的各种资源都纳入到对应的模块管理中来，所以在 webpack 的设计中，最重要的部分就是管理模块和模块之间的关系。
+
+在 webpack 支持的前端代码模块化中，我们可以使用类似 `import * as m from './index.js'` 来引用代码模块 index.js。
+
+引用第三方类库则是像这样：`import React from 'react'`。webpack 构建的时候，会解析依赖后，然后再去加载依赖的模块文件，而前边我们详细讲述的 entry，所谓 webpack 构建的起点，本质上也是一个 module，而我们在设置好 webpack 后，开发的过程亦是在写一个个的业务 module。
+
+## 路径解析
+
+当我们写一个 import 语句来引用一个模块时，webpack 是如何获取到对应模块的文件路径的呢？这其中有十分复杂的实现逻辑和相对繁琐的配置选择。
+
+webpack 中有一个很关键的模块 **enhanced-resolve** 就是处理依赖模块路径的解析的，这个模块可以说是 Node.js 那一套模块路径解析的增强版本，有很多可以自定义的解析配置。
+
+我们简单整理一下基本的模块解析规则，以便更好地理解后续 webpack 的一些配置会产生的影响。
+
+- 解析相对路径
+  1. 查找相对当前模块的路径下是否有对应文件或文件夹
+  2. 是文件则直接加载
+  3. 是文件夹则继续查找文件夹下的 package.json 文件
+  4. 有 package.json 文件则按照文件中 `main` 字段的文件名来查找文件
+  5. 无 package.json 或者无 `main` 字段则查找 `index.js` 文件
+- 解析模块名
+
+  查找当前文件目录下，父级目录及以上目录下的 node_modules 文件夹，看是否有对应名称的模块
+
+- 解析绝对路径（不建议使用）
+
+  直接查找对应路径的文件
+
+
+在 webpack 配置中，和模块路径解析相关的配置都在 resolve 字段下：
+```
+module.exports = {
+  resolve: {
+    // ...
+  }
+}
+```
+## resolve 配置
+
