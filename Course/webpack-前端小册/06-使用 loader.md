@@ -103,4 +103,4 @@ rules: [
 
 `test/include/exclude` 是 `resource.(test/include/exclude)` 的简写，`and/or/not` 这些则需要放到 `resource` 中进行配置。
 
-## module type
+## module type  
