@@ -104,3 +104,25 @@ rules: [
 `test/include/exclude` 是 `resource.(test/include/exclude)` 的简写，`and/or/not` 这些则需要放到 `resource` 中进行配置。
 
 ## module type  
+
+不同的模块类型类似于配置了不同的 loader，webpack 会有针对性地进行处理，现阶段实现了以下 5 种模块类型。
+
+- `javascript/auto`：即 webpack 3 默认的类型，支持现有的各种 JS 代码模块类型 —— CommonJS、AMD、ESM
+- `javascript/esm`：ECMAScript modules，其他模块系统，例如 CommonJS 或者 AMD 等不支持，是 .mjs 文件的默认类型
+- `javascript/dynamic`：CommonJS 和 AMD，排除 ESM
+- `javascript/json`：JSON 格式数据，require 或者 import 都可以引入，是 .json 文件的默认类型
+- `webassembly/experimental`：WebAssembly modules，当前还处于试验阶段，是 .wasm 文件的默认类型
+
+如果不希望使用默认的类型的话，在确定好匹配规则条件时，我们可以使用 type 字段来指定模块类型，例如把所有的 JS 代码文件都设置为强制使用 ESM 类型：
+
+```
+{
+  test: /\.js/,
+  include: [
+    path.resolve(__dirname, 'src'),
+  ],
+  type: 'javascript/esm', // 这里指定模块类型
+},
+```
+
+上述做法是可以帮助你规范整个项目的模块系统，但是如果遗留太多不同类型的模块代码时，建议还是直接使用默认的 `javascript/auto`。
