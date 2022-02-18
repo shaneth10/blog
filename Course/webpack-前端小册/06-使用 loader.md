@@ -126,3 +126,31 @@ rules: [
 ```
 
 上述做法是可以帮助你规范整个项目的模块系统，但是如果遗留太多不同类型的模块代码时，建议还是直接使用默认的 `javascript/auto`。
+
+## 使用 loader 配置
+
+在当前版本的 webpack 中，`module.rules` 的匹配规则最重要的还是用于配置 loader，我们可以使用 `use` 字段：
+
+```
+rules: [
+  {
+    test: /\.less/,
+    use: [
+      'style-loader', // 直接使用字符串表示 loader
+      {
+        loader: 'css-loader',
+        options: {
+          importLoaders: 1
+        },
+      }, // 用对象表示 loader，可以传递 loader 配置等
+      {
+        loader: 'less-loader',
+        options: {
+          noIeCompat: true
+        }, // 传递 loader 配置
+      },
+    ],
+  },
+],
+```
+
