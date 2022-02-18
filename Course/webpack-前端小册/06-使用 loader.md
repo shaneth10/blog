@@ -146,7 +146,7 @@ rules: [
       {
         loader: 'less-loader',
         options: {
-          noIeCompat: true
+          noIeCompat: true  
         }, // 传递 loader 配置
       },
     ],
