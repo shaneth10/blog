@@ -158,5 +158,62 @@ rules: [
 
 前面提到，一个匹配规则中可以配置使用多个 loader，即一个模块文件可以经过多个 loader 的转换处理，执行顺序是从最后配置的 loader 开始，一步步往前。例如，对于上面的 less 规则配置，一个 style.less 文件会途径 less-loader、css-loader、style-loader 处理，成为一个可以打包的模块。
 
+loader 的应用顺序在配置多个 loader 一起工作时很重要，例如在处理 CSS 的配置上，除了 style-loader 和 css-loader，你可能还要配置 less-loader 然后再加个 postcss 的 autoprefixer 等。
 
+上述从后到前的顺序是在同一个 rule 中进行的，那如果多个 rule 匹配了同一个模块文件，loader 的应用顺序又是怎样的呢？看一份这样的配置：
 
+```
+rules: [
+  {
+    test: /\.js$/,
+    exclude: /node_modules/,
+    loader: "eslint-loader",
+  },
+  {
+    test: /\.js$/,
+    exclude: /node_modules/,
+    loader: "babel-loader",
+  },
+],
+```
+
+这样无法法保证 eslint-loader 在 babel-loader 应用前执行。webpack 在 `rules` 中提供了一个 `enforce` 的字段来配置当前 rule 的 loader 类型，没配置的话是普通类型，我们可以配置 `pre` 或 `post`，分别对应前置类型或后置类型的 loader。
+
+> eslint-loader 要检查的是人工编写的代码，如果在 babel-loader 之后使用，那么检查的是 Babel 转换后的代码，所以必须在 babel-loader 处理之前使用。
+
+还有一种行内 loader，即我们在应用代码中引用依赖时直接声明使用的 loader，如 `const json = require('json-loader!./file.json')` 这种。不建议在应用开发中使用这种 loader，后续我们还会再提到。
+
+顾名思义，所有的 loader 按照**前置 -> 行内 -> 普通 -> 后置**的顺序执行。所以当我们要确保 eslint-loader 在 babel-loader 之前执行时，可以如下添加 enforce 配置：
+
+```
+rules: [
+  {
+    enforce: 'pre', // 指定为前置类型
+    test: /\.js$/,
+    exclude: /node_modules/,
+    loader: "eslint-loader",
+  },
+]
+```
+
+## 使用`noParse`
+
+在 webpack 中，我们需要使用的 loader 是在 `module.rules` 下配置的，webpack 配置中的 module 用于控制如何处理项目中不同类型的模块。
+
+除了 `module.rules` 字段用于配置 loader 之外，还有一个 `module.noParse` 字段，可以用于配置哪些模块文件的内容不需要进行解析。对于一些不需要解析依赖（即无依赖） 的第三方大型类库等，可以通过这个字段来配置，以提高整体的构建速度。
+
+使用 `noParse` 进行忽略的模块文件中不能使用 `import、require、define` 等导入机制。
+
+```
+module.exports = {
+  // ...
+  module: {
+    noParse: /jquery|lodash/, // 正则表达式
+
+    // 或者使用 function
+    noParse(content) {
+      return /jquery|lodash/.test(content)
+    },
+  }
+}
+```
