@@ -46,3 +46,42 @@ const foo = require('./foo.js'); // 依赖 ./foo.js 模块
 依赖解析和管理便是 webpack 这个 bundler 很重要的一个工作。如果 foo.js 文件没有依赖其他的模块的话，那么这个简单例子的依赖树也就相对简单：`entry.js -> bar.js -> foo.js`，当然，日常开发中遇见的一般都是相当复杂的代码模块依赖关系。
 
 如果放到合并文件的处理上，上述的「foo.js」和「bar.js」模块的代码需要放到我们入口代码的前边。但是 webpack 不是简单地按照依赖的顺序合并，而是采取了一种更加巧妙的方式，顺带解决了前边提到的文件合并的第二个问题。
+
+## webpack 的打包
+
+在已经解析出依赖关系的前提下，webpack 会利用 JavaScript Function 的特性提供一些代码来将各个模块整合到一起，即是将每一个模块包装成一个 JS Function，提供一个引用依赖模块的方法，如下面例子中的 `__webpack__require__`，这样做，既可以避免变量相互干扰，又能够有效控制执行顺序，简单的代码例子如下：
+
+```
+// 分别将各个依赖模块的代码用 modules 的方式组织起来打包成一个文件
+// entry.js
+modules['./entry.js'] = function() {
+  const { bar } = __webpack__require__('./bar.js')
+}
+
+// bar.js
+modules['./bar.js'] = function() {
+  const foo = __webpack__require__('./foo.js')
+};
+
+// foo.js
+modules['./foo.js'] = function() {
+  // ...
+}
+
+// 已经执行的代码模块结果会保存在这里
+const installedModules = {}
+
+function __webpack__require__(id) {
+  // ... 
+  // 如果 installedModules 中有就直接获取
+  // 没有的话从 modules 中获取 function 然后执行，将结果缓存在 installedModules 中然后返回结果
+}
+```
+
+我们前边介绍 webpack 生成 js 代码体积大小优化时，介绍过有一个配置可以用于移除掉部分 function 代码，因为这种实现方式最大的缺点就是会增大生成的 js 代码体积，当 webpack 可以确定代码执行顺序，以及可以用唯一的模块 id 去调整模块内变量名防止冲突时，这些所谓的胶水代码也就没有必要存在了。
+
+## webpack 的结构
+
+webpack 需要强大的扩展性，尤其是插件实现这一块，webpack 利用了 tapable 这个库（其实也是 webpack 作者开发的库）来协助实现对于整个构建流程各个步骤的控制，最主要的功能就是用来添加各种各样的钩子方法（即 Hook）。
+
+webpack 基于 tapable 定义了主要构建流程后，使用 tapable 这个库添加了各种各样的钩子方法来将 webpack 扩展至功能十分丰富，同时对外提供了相对强大的扩展性，即 plugin 的机制。
