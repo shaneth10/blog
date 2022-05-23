@@ -85,3 +85,13 @@ function __webpack__require__(id) {
 webpack 需要强大的扩展性，尤其是插件实现这一块，webpack 利用了 tapable 这个库（其实也是 webpack 作者开发的库）来协助实现对于整个构建流程各个步骤的控制，最主要的功能就是用来添加各种各样的钩子方法（即 Hook）。
 
 webpack 基于 tapable 定义了主要构建流程后，使用 tapable 这个库添加了各种各样的钩子方法来将 webpack 扩展至功能十分丰富，同时对外提供了相对强大的扩展性，即 plugin 的机制。
+
+在这个基础上，我们来了解一下 webpack 工作的主要流程和其中几个重要的概念。
+
+- Compiler，webpack 的运行入口，实例化时定义 webpack 构建主要流程，同时创建构建时使用的核心对象 compilation
+- Compilation，由 Compiler 实例化，存储构建过程中各流程使用到的数据，用于控制这些数据的变化
+- Chunk，即用于表示 chunk 的类，即构建流程中的主干，一般情况下一个入口会对应一个 chunk，对于构建时需要的 chunk 对象由 Compilation 创建后保存管理
+- Module，用于表示代码模块的类，衍生出很多子类用于处理不同的情况，关于代码模块的所有信息都会存在 Module 实例中，例如 dependencies 记录代码模块的依赖等
+- Parser，其中相对复杂的一个部分，基于 acorn 来分析 AST 语法树，解析出代码模块的依赖
+- Dependency，解析时用于保存代码模块对应的依赖使用的对象
+- Template，生成最终代码要使用到的代码模板，像上述提到的 function 代码就是用对应的 Template 来生成
