@@ -95,3 +95,23 @@ webpack 基于 tapable 定义了主要构建流程后，使用 tapable 这个库
 - Parser，其中相对复杂的一个部分，基于 acorn 来分析 AST 语法树，解析出代码模块的依赖
 - Dependency，解析时用于保存代码模块对应的依赖使用的对象
 - Template，生成最终代码要使用到的代码模板，像上述提到的 function 代码就是用对应的 Template 来生成
+
+> 官方对于 Compiler 和 Compilation 的定义是：
+>
+> compiler 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。
+>
+> compilation 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键步骤的回调，以供插件做自定义处理时选择使用。
+
+上述是 webpack 源码实现中比较重要的几个部分，webpack 运行的大概工作流程是这样的：
+
+```
+创建 Compiler -> 
+调用 compiler.run 开始构建 ->
+创建 Compilation -> 
+基于配置开始创建 Chunk -> 
+使用 Parser 从 Chunk 开始解析依赖 -> 
+使用 Module 和 Dependency 管理代码模块相互关系 -> 
+使用 Template 基于 Compilation 的数据生成结果代码 ->
+```
+
+## webpack 的源码
