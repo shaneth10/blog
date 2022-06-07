@@ -126,4 +126,13 @@ Compilation 的实现也是比较复杂的，lib/Compilation.js 单个文件代�
 
 `_addModuleChain` 方法会根据入口文件这第一个依赖的类型创建一个 `moduleFactory`，然后再使用这个 `moduleFactory` 给入口文件创建一个 `Module` 实例，这个 `Module` 实例用来管理后续这个入口构建的相关数据信息，关于 `Module` 类的具体实现可以参考这个源码：`lib/Module.js`，这个是个基础类，大部分我们构建时使用的代码模块的 `Module` 实例是 `lib/NormalModule.js` 这个类创建的。
 
-我们介绍 addEntry 主要是为了寻找整个构建的起点，让这一切有迹可循，后续的深入可以从这个点出发。
+### buildModule
+
+当一个 `Module` 实例被创建后，比较重要的一步是执行 `compilation.buildModule` 这个方法，这个方法主要会调用 `Module` 实例的 `build` 方法，这个方法主要就是创建 `Module` 实例需要的一些东西，对我们梳理流程来说，这里边最重要的部分就是调用自身的 `runLoaders` 方法。
+
+`runLoaders` 这个方法是 webpack 依赖的这个类库实现的：loader-runner，这个方法也比较容易理解，就是执行对应的 loaders，将代码源码内容一一交由配置中指定的 loader 处理后，再把处理的结果保存起来。
+
+我们之前介绍过，webpack 的 loader 就是转换器，loader 就是在这个时候发挥作用的，至于 loader 执行的细节，有兴趣深入的同学可以去了解 loader-runner 的实现。
+
+上述提到的 `Module` 实例的 `build` 方法在执行完对应的 loader，处理完模块代码自身的转换后，还有相当重要的一步是调用 Parser 的实例来解析自身依赖的模块，解析后的结果存放在 `module.dependencies` 中，首先保存的是依赖的路径，后续会经由 `compilation.processModuleDependencies` 方法，再来处理各个依赖模块，递归地去建立整个依赖关系树。
+
