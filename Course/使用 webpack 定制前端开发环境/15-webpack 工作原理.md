@@ -115,3 +115,7 @@ webpack 基于 tapable 定义了主要构建流程后，使用 tapable 这个库
 ```
 
 ## webpack 的源码
+
+webpack 主要的构建处理方法都在 Compilation 中，我们要了解 loader 和 plugin 的机制，就要深入 Compilation 这一部分的内容。
+
+Compilation 的实现也是比较复杂的，lib/Compilation.js 单个文件代码就有近 2000 行之多，我们挑关键的几个部分来介绍一下。
