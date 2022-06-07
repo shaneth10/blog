@@ -119,3 +119,11 @@ webpack 基于 tapable 定义了主要构建流程后，使用 tapable 这个库
 webpack 主要的构建处理方法都在 Compilation 中，我们要了解 loader 和 plugin 的机制，就要深入 Compilation 这一部分的内容。
 
 Compilation 的实现也是比较复杂的，lib/Compilation.js 单个文件代码就有近 2000 行之多，我们挑关键的几个部分来介绍一下。
+
+### addEntry 和 _addModuleChain
+
+`addEntry` 这个方法顾名思义，用于把配置的入口加入到构建的任务中去，当解析好 webpack 配置，准备好开始构建时，便会执行 `addEntry` 方法，而 `addEntry` 会调用 `_addModuleChain` 来为入口文件（入口文件这个时候等同于第一个依赖）创建一个对应的 `Module` 实例。
+
+`_addModuleChain` 方法会根据入口文件这第一个依赖的类型创建一个 `moduleFactory`，然后再使用这个 `moduleFactory` 给入口文件创建一个 `Module` 实例，这个 `Module` 实例用来管理后续这个入口构建的相关数据信息，关于 `Module` 类的具体实现可以参考这个源码：`lib/Module.js`，这个是个基础类，大部分我们构建时使用的代码模块的 `Module` 实例是 `lib/NormalModule.js` 这个类创建的。
+
+我们介绍 addEntry 主要是为了寻找整个构建的起点，让这一切有迹可循，后续的深入可以从这个点出发。
