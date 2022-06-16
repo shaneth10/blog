@@ -140,3 +140,38 @@ Compilation 的实现也是比较复杂的，lib/Compilation.js 单个文件代�
 
 webpack 会使用 tapable 给整个构建流程中的各个步骤定义钩子，用于注册事件，然后在特定的步骤执行时触发相应的事件，注册的事件函数便可以调整构建时的上下文数据，或者做额外的处理工作，这就是 webpack 的 plugin 机制。
 
+在 webpack 执行入口处 lib/webpack.js 有这么一段代码：
+```
+if (options.plugins && Array.isArray(options.plugins)) {
+  for (const plugin of options.plugins) {
+    if (typeof plugin === "function") {
+      plugin.call(compiler, compiler);
+    } else {
+      plugin.apply(compiler);
+    }
+  }
+}
+```
+
+这个 plugin 的 `apply` 方法就是用来给 `compiler` 实例注册事件钩子函数的，而 `compiler` 的一些事件钩子中可以获得 `compilation` 实例的引用，通过引用又可以给 `compilation` 实例注册事件函数，以此类推，便可以将 plugin 的能力覆盖到整个 webpack 构建过程。
+
+后续有章节会介绍如何编写 webpack plugin，可以将两部分的内容结合一下，来帮助理解 webpack plugin 的执行机制。
+
+### 产出构建结果
+
+最后还有一个部分，即用 Template 产出最终构建结果的代码内容，这一部分不作详细介绍了，仅留下一些线索，供有兴趣继续深入的同学使用：
+
+- Template 基础类：lib/Template.js
+- 常用的主要 Template 类：lib/MainTemplate.js
+- Compilation 中产出构建结果的代码：compilation.createChunkAssets
+
+## 小结
+
+webpack 发展至今，已经是一个内部十分复杂的工具，如果从各处细节来剖析 webpack 整体实现，怕是可以写一本完整的书。由于小册章节的内容长度有限，本章节更多的是起着抛砖引玉的作用，给各位有兴趣细究 webpack 内部运行原理的读者们起个头，梳理一个简单基础的脉络。
+
+本章节主要介绍了：
+
+- 模块 bundler 的工作原理
+- webpack 在 bundler 的基础上如何去增强自己的扩展性
+- webpack 主要构建流程中比较重要的几个概念
+- webpack 基础构建流程的源码结构
